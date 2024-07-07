@@ -1,4 +1,4 @@
-/* html.lenis,
+html.lenis,
 html.lenis body {
   height: auto;
 }
@@ -17,12 +17,13 @@ html.lenis body {
 
 .lenis.lenis-smooth iframe {
   pointer-events: none;
-} */
+}
 
 
 html,
 body {
   margin: 0;
+  padding: 0;
   overflow-x: hidden;
 }
 
@@ -37,11 +38,9 @@ body.dark-theme {
 }
 
 body {
-  position: relative;
   font-family: 'Urbanist', sans-serif;
   color: var(--text-color);
   background: var(--bkg-color);
-  transition: all 500ms;
   overflow: hidden;
   /* cursor: none; */
 }
