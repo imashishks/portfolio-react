@@ -20,12 +20,11 @@ html.lenis body {
 }
 
 
-html,
-body {
+* {
   margin: 0;
   padding: 0;
-  overflow-x: hidden;
 }
+
 
 body {
   --text-color: #333;
@@ -38,10 +37,10 @@ body.dark-theme {
 }
 
 body {
-  font-family: 'Urbanist', sans-serif;
+  font-family: 'Rubik', 'Inter', sans-serif;
   color: var(--text-color);
   background: var(--bkg-color);
-  overflow: hidden;
+  height: 1300vh !important;
   /* cursor: none; */
 }
 

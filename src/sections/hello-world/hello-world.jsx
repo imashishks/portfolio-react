@@ -18,8 +18,32 @@ function HelloWorld() {
     const w = ['.w1', '.w2', '.w3', '.w4'];
     const r = ['.r1', '.r2'];
     const l3 = ['.l5', '.l6'];
+    // let tl = gsap.timeline({
+    //     scrollTrigger: {
+    //         start: "top center",
+    //         trigger: '.who-is-container',
+    //         // end: "center center",
+    //         // end: "bottom center",
+    //         markers: true,
+    //         scrub: true,
+    //         // onEnter: () => {
+    //         //     document.querySelector('.text-6xl').classList = " text-6xl";
+    //         // },
+    //         // onLeave: () => {
+    //         //     document.querySelector('.text-6xl').classList += " fixed top-1/2 ";
+    //         // }
+    //     },
+    // })
     useGSAP(() => {
-        const timeline = gsap.timeline({ defaults: { ease: "power3.inOut" } });
+        const timeline = gsap.timeline({
+            defaults: {
+                ease: "power3.inOut"
+            },
+            scrollTrigger: {
+                start: "top center",
+                trigger: ""
+            }
+        });
         h.forEach((paths, index) => {
             const length = getLength(paths);
             timeline.set(paths, { strokeDasharray: length, strokeDashoffset: length }, index * 0.5);
@@ -92,15 +116,38 @@ function HelloWorld() {
         timeline.set('.ex1', { strokeDasharray: ex1length, strokeDashoffset: ex1length }, 0);
         timeline.from('.ex1', { opacity: 0 }, 0);
         timeline.to('.ex1', { opacity: 1, strokeDashoffset: 0, duration: 0.9, autoRound: false }, 0);
-        timeline.from('.ex2', { opacity: 0 },0.9);
-        timeline.to('.ex2', { opacity: 1, duration: 0.9 },0.9);
+        timeline.from('.ex2', { opacity: 0 }, 0.9);
+        timeline.to('.ex2', { opacity: 1, duration: 0.9 }, 0.9);
+
+        gsap.to(".hello-svg", {
+            xPercent: 320 * 0.5,
+            // pin: true,
+            scrollTrigger: {
+                trigger: '.hello-svg',
+                scrub: true,
+                start: 'top 33%',
+                pin: true,
+            }
+        })
+        gsap.to(".world-svg", {
+            xPercent: -340 * 0.5,
+            // pin: true,
+            scrollTrigger: {
+                trigger: '.world-svg',
+                scrub: true,
+                start: 'top 45%',
+                pin: true
+            }
+        })
+
+
 
     }, {
         scope: helloWorld
     });
     return (
-        <section ref={helloWorld} className={styles["hello-world"] + ' flex justify-center content-center'}>
-            <svg width="809" height="305" viewBox="0 0 809 305" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <section ref={helloWorld} className={styles["hello-world"] + ' hello-word-container flex flex-col justify-center items-center'}>
+            <svg className="hello-svg" width="809" height="150" viewBox="0 0 809 150" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path className="h1" d="M107 22V116" stroke="#999999" strokeWidth="40" strokeLinecap="round" />
                 <path className={styles["h2"] + " h2"} d="M177.5 22V116" stroke="#111111" strokeWidth="40" strokeLinecap="round" />
                 <path className="h3" d="M107.5 69L177.5 69" stroke="#555555" strokeWidth="40" strokeLinecap="round" />
@@ -116,6 +163,8 @@ function HelloWorld() {
                 <path className="l3" d="M471 21V115" stroke="#777777" strokeWidth="40" strokeLinecap="round" />
                 <path className="l4" d="M471.5 115L541.5 115" stroke="#333333" strokeWidth="40" strokeLinecap="round" />
                 <circle className="o1" cx="631" cy="68" r="48" stroke="#333333" strokeWidth="40" />
+            </svg>
+            <svg className="world-svg" width="809" height="180" viewBox="0 160 809 150" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path className="w1" d="M25 182L52 276" stroke="#999999" strokeWidth="40" strokeLinecap="round" />
                 <path className="w2" d="M155 182L128 276" stroke="#999999" strokeWidth="40" strokeLinecap="round" />
                 <path className="w3" d="M90 208L51.9999 275.615" stroke="#555555" strokeWidth="40" strokeLinecap="round" />
