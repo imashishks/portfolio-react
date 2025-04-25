@@ -68,7 +68,7 @@ function WhoIs() {
 
         gsap.to('#avatar', {
             scrollTrigger: {
-                markers: true,
+                // markers: true,
                 start: 'top',
                 end: 'bottom',
                 scrub: true,

@@ -3,21 +3,29 @@ import './App.css';
 import { HelloWorld } from './sections/hello-world';
 import { WhoIs } from './sections/who-is';
 import { Welcome } from './sections/welcome';
-import Lenis from 'lenis';
+import { ReactLenis } from 'lenis/react'
+import { useEffect, useRef } from 'react'
+import gsap from 'gsap';
 function App() {
-  const lenis = new Lenis();
-  function raf(time) {
-    lenis.raf(time)
-    requestAnimationFrame(raf)
-  }
-  requestAnimationFrame(raf);
+  const lenisRef = useRef()
+  useEffect(() => {
+    function update(time) {
+      lenisRef.current?.lenis?.raf(time * 1000)
+    }
+    gsap.ticker.add(update)
+    return () => gsap.ticker.remove(update)
+  }, [])
   return (
     <>
-      <div>
+
+      <ReactLenis root options={{ lerp: 0.1 }} ref={lenisRef}>
+
         <HelloWorld />
         <WhoIs />
         <Welcome />
-      </div >
+
+      </ReactLenis>
+
     </>
   )
 }
