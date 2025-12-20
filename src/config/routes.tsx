@@ -1,5 +1,5 @@
 import { RouteObject, Navigate } from "react-router-dom";
-import WhoAmI from "../pages/WhoAmI";
+import WhoAmI from "../pages/WhoAmI/WhoAmI";
 import Hobbies from "../pages/Hobbies";
 import Contact from "../pages/Contact";
 import { ROUTES } from "./../constants";

@@ -1,6 +1,16 @@
 @import "tailwindcss";
 
+@font-face {
+  font-family: "Heming";
+  src: url("./assets/fonts/heming.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
 @theme {
+  --font-family-sans: "Heming", ui-sans-serif, system-ui, sans-serif,
+    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   --color-*: initial;
   --color-white: #fff;
   --color-orange: #ff8c5b;
@@ -119,4 +129,11 @@
     0.9976,
     1
   );
+}
+
+@layer base {
+  html,
+  body {
+    font-family: var(--font-family-sans);
+  }
 }
