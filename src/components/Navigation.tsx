@@ -1,13 +1,25 @@
-import { Link, useLocation } from "react-router-dom";
+import Button from "./common/Button";
 
-function Navigation() {
-  const location = useLocation();
-
-  const isActive = (path: string) => location.pathname === path;
+function Navigation({ activeRoute }: { activeRoute: string }) {
+  const isActive = (path: string) => {
+    return activeRoute === path;
+  };
 
   return (
-    <nav>
-      <ul
+    <nav className="flex justify-center h-25">
+      <div className="flex justify-around max-w-lg gap-4 items-start pt-2">
+        <Button variant="link" to="whoami" active={isActive("whoami")}>
+          Who am I?
+        </Button>
+        <Button variant="link" to="hobbies" active={isActive("hobbies")}>
+          Hobbies
+        </Button>
+        <Button variant="link" to="contact" active={isActive("contact")}>
+          Let's Connect?
+        </Button>
+      </div>
+
+      {/* <ul
         style={{
           display: "flex",
           listStyle: "none",
@@ -51,7 +63,7 @@ function Navigation() {
             Contact
           </Link>
         </li>
-      </ul>
+      </ul> */}
     </nav>
   );
 }

@@ -13,6 +13,7 @@
   "dependencies": {
     "@gsap/react": "^2.1.1",
     "@rollup/plugin-commonjs": "^28.0.0",
+    "classnames": "^2.5.1",
     "gsap": "^3.12.5",
     "lenis": "^1.1.5",
     "motion": "^12.23.26",

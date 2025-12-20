@@ -1,24 +1,23 @@
-import { RouteObject, Navigate } from 'react-router-dom'
-import WhoAmI from '../pages/WhoAmI'
-import ArtAndMusic from '../pages/ArtAndMusic'
-import Contact from '../pages/Contact'
-
+import { RouteObject, Navigate } from "react-router-dom";
+import WhoAmI from "../pages/WhoAmI";
+import Hobbies from "../pages/Hobbies";
+import Contact from "../pages/Contact";
+import { ROUTES } from "./../constants";
 export const routes: RouteObject[] = [
   {
-    path: '/',
-    element: <Navigate to="/who-am-i" replace />,
+    path: "/",
+    element: <Navigate to={ROUTES.WHOAMI.key} replace />,
   },
   {
-    path: '/who-am-i',
+    path: ROUTES.WHOAMI.key,
     element: <WhoAmI />,
   },
   {
-    path: '/artandmusic',
-    element: <ArtAndMusic />,
+    path: ROUTES.HOBBIES.key,
+    element: <Hobbies />,
   },
   {
-    path: '/contact',
+    path: ROUTES.CONTACT.key,
     element: <Contact />,
   },
-]
-
+];
