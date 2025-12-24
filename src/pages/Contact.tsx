@@ -1,11 +1,12 @@
+import TabLayout from "../components/TabLayout";
+
 function Contact() {
   return (
-    <div>
+    <TabLayout>
       <h1>Contact</h1>
       <p>This is the Contact page.</p>
-    </div>
-  )
+    </TabLayout>
+  );
 }
 
-export default Contact
-
+export default Contact;

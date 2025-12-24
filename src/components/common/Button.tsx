@@ -5,8 +5,8 @@ import classNames from "classnames";
 
 interface ButtonProps {
   children: ReactNode;
-  variant: "link";
-  to: string;
+  variant?: "link";
+  to?: string;
   active?: boolean;
   className?: string;
 }
