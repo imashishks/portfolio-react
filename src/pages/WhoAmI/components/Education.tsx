@@ -21,7 +21,7 @@ const education = [
 ];
 export default function Education() {
   return (
-    <motion.section className="mt-16 w-full">
+    <motion.section className="mt-16 w-full mb-8">
       <h3 className="mb-4 font-bold text-orange">education</h3>
       <motion.section
         initial="hidden"

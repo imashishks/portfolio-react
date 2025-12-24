@@ -22,17 +22,15 @@ function WhoAmI() {
         India).
       </p>
       <p className="mt-8  text-sm">
-        Apart from work, i like to paint, cycling and long walks.Coffee is my
+        Apart from work, i like to paint, cycling and long walks. Coffee is my
         choice of fuel (both cold and hot brew, i don't discriminate). Never
         said no to a nice chicken burger or some chicken biryani. Big fan of all
         kinds of music from Kishore kumar to Ritviz to Pink flyod and Queen.
       </p>
-
       <Experience />
-
       <Skills />
-
       <Education />
+      <div className="opacity-0">.</div>
     </div>
   );
 }

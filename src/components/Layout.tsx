@@ -27,13 +27,7 @@ function Layout({ children }: LayoutProps) {
       )}
     >
       <div className="w-5/6 flex items-end h-[75%]">
-        <svg
-          width="63"
-          height="44"
-          viewBox="0 0 63 44"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
+        <svg width="63" height="44" viewBox="0 0 63 44" fill="none">
           <path d="M63 0V44H0L63 0Z" fill="black" />
         </svg>
 
@@ -42,7 +36,7 @@ function Layout({ children }: LayoutProps) {
           initial={{ height: "0" }}
           animate={{ height: "100%" }}
           transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
-          className="content bg-white bg-[radial-gradient(circle,#e0e0e0_1px,transparent_1px)] bg-size-[20px_20px] w-4/6  rounded-t-xl pt-8 p-6 pb-0 grow h-full"
+          className="content bg-white bg-[radial-gradient(circle,#e0e0e0_1px,transparent_1px)] bg-size-[20px_20px] w-4/6  rounded-t-xl pt-8 p-6 pb-0 grow h-full border-2"
         >
           <main className="flex-1 h-full">
             <motion.div
@@ -50,19 +44,13 @@ function Layout({ children }: LayoutProps) {
               initial={{ opacity: 0, filter: "blur(10px)" }}
               animate={{ opacity: 1, filter: "blur(0px)" }}
               transition={{ duration: 0.3, ease: "easeOut", delay: 0.4 }}
-              className="flex justify-center items-center h-full overflow-y-auto"
+              className="flex justify-center items-center h-full overflow-y-auto scroll-fade"
             >
               {children}
             </motion.div>
           </main>
         </motion.div>
-        <svg
-          width="63"
-          height="44"
-          viewBox="0 0 63 44"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
+        <svg width="63" height="44" viewBox="0 0 63 44" fill="none">
           <path d="M5.32134e-07 0V44H63L5.32134e-07 0Z" fill="black" />
         </svg>
       </div>

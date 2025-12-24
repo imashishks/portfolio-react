@@ -3,9 +3,10 @@
 @font-face {
   font-family: "Heming";
   src: url("./assets/fonts/heming.ttf") format("truetype");
-  font-weight: normal;
+  font-weight: 100 900;
   font-style: normal;
   font-display: swap;
+  font-synthesis: weight;
 }
 
 @theme {
@@ -135,5 +136,23 @@
   html,
   body {
     font-family: var(--font-family-sans);
+    font-synthesis: weight;
+  }
+}
+
+@layer utilities {
+  .scroll-fade {
+    mask-image: linear-gradient(
+      to bottom,
+      transparent 0%,
+      black 10%,
+      black 100%
+    );
+    -webkit-mask-image: linear-gradient(
+      to bottom,
+      transparent 0%,
+      black 10%,
+      black 100%
+    );
   }
 }
