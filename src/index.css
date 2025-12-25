@@ -156,3 +156,7 @@
     );
   }
 }
+
+.keypadbutton {
+  border: 2px;
+}

@@ -1,4 +1,6 @@
-import TabLayout from "../components/TabLayout";
+import { Outlet } from "react-router-dom";
+import TabLayout from "../../components/TabLayout";
+import { ROUTES } from "../../constants";
 
 function Hobbies() {
   const tabs = [
@@ -24,9 +26,10 @@ function Hobbies() {
     },
   ];
   return (
-    <TabLayout tabs={tabs}>
+    <TabLayout tabs={tabs} basePath={ROUTES.HOBBIES.key}>
       <h1>Beyond Work</h1>
       <p>This is the Art and Music page.</p>
+      <Outlet />
     </TabLayout>
   );
 }

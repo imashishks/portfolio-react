@@ -1,8 +1,9 @@
 import KeypadButton from "./common/KeypadButton";
 
-function Navigation({ activeRoute }: { activeRoute: string }) {
+function Navigation({ pathname }: { pathname: string }) {
   const isActive = (path: string) => {
-    return activeRoute === path;
+    // Check if pathname exactly matches the path or starts with the path (for nested routes)
+    return pathname === `/${path}` || pathname.startsWith(`/${path}/`);
   };
 
   return (

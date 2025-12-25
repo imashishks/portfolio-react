@@ -22,12 +22,12 @@ function KeypadButton({
   const buttonWrapperClasses = classNames("group relative block", className);
 
   const topDivClasses = classNames(
-    "rounded-[10px] py-6 px-8 w-full h-full top-0 flex items-center justify-center absolute z-4 whitespace-nowrap",
-    active ? "bg-black text-white" : "bg-white"
+    "rounded-[10px] py-6 px-8 w-full h-full top-0 flex items-center justify-center absolute z-4 whitespace-nowrap border-2",
+    active ? "bg-black text-white keypadbutton" : "bg-white"
   );
 
   const bottomDivClasses = classNames(
-    "rounded-[10px] py-6 px-8 w-full h-full absolute top-[6px] z-1",
+    "rounded-[10px] py-6 px-8 w-full h-full absolute top-[6px] z-1 border-2 border-black",
     active ? "bg-white" : "bg-black"
   );
 

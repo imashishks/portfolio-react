@@ -1,10 +1,9 @@
-import { ReactNode, useState } from "react";
+import { ReactNode } from "react";
 import Navigation from "./Navigation";
 import { useLocation } from "react-router-dom";
 import { ROUTES } from "../constants";
 import classNames from "classnames";
 import { motion } from "motion/react";
-import TabLayout from "./TabLayout";
 
 interface LayoutProps {
   children: ReactNode;
@@ -12,12 +11,26 @@ interface LayoutProps {
 
 function Layout({ children }: LayoutProps) {
   const location = useLocation();
-  const activeRoute = location.pathname.split("/").pop() || ROUTES.WHOAMI.key;
-  const parsedActiveRoute = activeRoute
-    .toUpperCase()
-    .replace(/[_-]/g, " ") as keyof typeof ROUTES;
+
+  // Find the matching route by checking if pathname starts with any route key
+  const getActiveRoute = () => {
+    const pathname = location.pathname;
+
+    // Check each route to see if pathname matches or starts with it
+    for (const [key, route] of Object.entries(ROUTES)) {
+      const routePath = `/${route.key}`;
+      if (pathname === routePath || pathname.startsWith(`${routePath}/`)) {
+        return key;
+      }
+    }
+
+    // Default to WHOAMI if no match
+    return "WHOAMI";
+  };
+
+  const activeRouteKey = getActiveRoute();
   const backgroundClass =
-    ROUTES[parsedActiveRoute]?.meta.backgroundClass ||
+    ROUTES[activeRouteKey as keyof typeof ROUTES]?.meta.backgroundClass ||
     ROUTES.WHOAMI.meta.backgroundClass;
   return (
     <div
@@ -39,7 +52,7 @@ function Layout({ children }: LayoutProps) {
       </div>
 
       <motion.div className="w-[80%] h-[3px] bg-black rounded-sm mb-6"></motion.div>
-      <Navigation activeRoute={activeRoute} />
+      <Navigation pathname={location.pathname} />
     </div>
   );
 }

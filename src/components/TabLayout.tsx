@@ -1,5 +1,6 @@
 import { ReactNode, useEffect, useState } from "react";
 import { motion } from "motion/react";
+import { useLocation, useNavigate } from "react-router-dom";
 
 interface TabLayoutProps {
   children: ReactNode;
@@ -7,15 +8,38 @@ interface TabLayoutProps {
     id: string;
     label: string;
   }[];
+  basePath?: string;
 }
 
-function TabLayout({ children, tabs }: TabLayoutProps) {
+function TabLayout({ children, tabs, basePath = "" }: TabLayoutProps) {
+  const location = useLocation();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("");
+
+  // Sync activeTab with current route
   useEffect(() => {
-    if (Array.isArray(tabs)) {
-      setActiveTab(tabs[0].id);
+    if (Array.isArray(tabs) && tabs.length > 0) {
+      // Extract the current tab from the pathname
+      const currentPath = location.pathname.split("/").pop() || "";
+      const matchingTab = tabs.find((tab) => tab.id === currentPath);
+
+      if (matchingTab) {
+        setActiveTab(matchingTab.id);
+      } else {
+        // Default to first tab if no match
+        setActiveTab(tabs[0].id);
+      }
     }
-  }, [tabs]);
+  }, [location.pathname, tabs]);
+
+  const handleTabClick = (tabId: string) => {
+    setActiveTab(tabId);
+    if (basePath) {
+      navigate(`/${basePath}/${tabId}`);
+    } else {
+      navigate(tabId);
+    }
+  };
   return (
     <motion.div
       initial={{ height: "0" }}
@@ -42,7 +66,7 @@ function TabLayout({ children, tabs }: TabLayoutProps) {
               whileTap={{ opacity: 1 }}
               transition={{ type: "spring", stiffness: 300, damping: 20 }}
               className="bg-white p-2 pl-6 pr-6 rounded-t-sm cursor-pointer"
-              onClick={() => setActiveTab(item.id)}
+              onClick={() => handleTabClick(item.id)}
             >
               {item.label}
             </motion.button>
