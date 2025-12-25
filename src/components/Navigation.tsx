@@ -12,7 +12,7 @@ function Navigation({ activeRoute }: { activeRoute: string }) {
           Who am I?
         </KeypadButton>
         <KeypadButton variant="link" to="hobbies" active={isActive("hobbies")}>
-          Hobbies
+          Beyond Work
         </KeypadButton>
         <KeypadButton variant="link" to="contact" active={isActive("contact")}>
           Let's Connect?

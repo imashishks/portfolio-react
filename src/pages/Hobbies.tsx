@@ -14,10 +14,18 @@ function Hobbies() {
       id: "coffee",
       label: "Coffee",
     },
+    {
+      id: "plants",
+      label: "Plants",
+    },
+    {
+      id: "fishes",
+      label: "Fishes",
+    },
   ];
   return (
     <TabLayout tabs={tabs}>
-      <h1>Hobbies</h1>
+      <h1>Beyond Work</h1>
       <p>This is the Art and Music page.</p>
     </TabLayout>
   );

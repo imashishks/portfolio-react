@@ -19,10 +19,7 @@ function KeypadButton({
   className,
 }: KeypadButtonProps) {
   // 3D button styling
-  const buttonWrapperClasses = classNames(
-    "group relative block",
-    className
-  );
+  const buttonWrapperClasses = classNames("group relative block", className);
 
   const topDivClasses = classNames(
     "rounded-[10px] py-6 px-8 w-full h-full top-0 flex items-center justify-center absolute z-4 whitespace-nowrap",
@@ -30,7 +27,7 @@ function KeypadButton({
   );
 
   const bottomDivClasses = classNames(
-    "rounded-[10px] py-6 px-8 w-full h-full absolute top-[10px] z-1",
+    "rounded-[10px] py-6 px-8 w-full h-full absolute top-[6px] z-1",
     active ? "bg-white" : "bg-black"
   );
 
@@ -41,10 +38,10 @@ function KeypadButton({
       <motion.div
         className={topDivClasses}
         animate={{
-          y: active ? 10 : 0,
+          y: active ? 6 : 0,
         }}
         whileTap={{
-          y: 10,
+          y: 6,
         }}
         transition={{ type: "spring", stiffness: 400, damping: 25 }}
       >
