@@ -20,7 +20,7 @@ function KeypadButton({
 }: KeypadButtonProps) {
   // 3D button styling
   const buttonWrapperClasses = classNames(
-    "group relative block before:py-6 before:px-8 before:content-[''] before:w-[calc(100%+4px)] before:h-full before:absolute before:z-1 before:left-[-2px] before:top-[14px] before:border before:border-black before:bg-[grey] before:rounded-[10px]",
+    "group relative block",
     className
   );
 
