@@ -27,8 +27,8 @@ function TabLayout({ children, tabs }: TabLayoutProps) {
         <motion.div
           initial={{ opacity: "0" }}
           animate={{ opacity: "100%" }}
-          transition={{ duration: 0, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
-          className="flex gap-1 absolute rotate-90 right-[-115px] transform-[translate(50%,-100%)] top-0"
+          transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1], delay: 0.3 }}
+          className="flex gap-1 absolute rotate-90 right-[-220px] transform-[translate(50%,-100%)] top-0"
         >
           {tabs.map((item) => (
             <motion.button

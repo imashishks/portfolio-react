@@ -18,7 +18,7 @@ function Button({ children, variant, to, active, className }: ButtonProps) {
   const activeClasses = "!bg-black text-white";
   console.log(className);
   console.log(active);
-  return variant === "link" ? (
+  return variant === "link" && to ? (
     <Link to={to} className={classNames(baseClasses, active && activeClasses)}>
       {children}
     </Link>
