@@ -75,9 +75,10 @@ function TabLayout({ children, tabs, basePath = "" }: TabLayoutProps) {
       )}
       <main className="flex-1 h-full relative">
         <motion.div
+          key={location.pathname}
           initial={{ opacity: 0, filter: "blur(10px)" }}
           animate={{ opacity: 1, filter: "blur(0px)" }}
-          transition={{ duration: 0.3, ease: "easeOut", delay: 0.4 }}
+          transition={{ duration: 0.3, ease: "easeOut", delay: 0.1 }}
           className="flex justify-center items-center h-full overflow-y-auto scroll-fade"
         >
           {children}

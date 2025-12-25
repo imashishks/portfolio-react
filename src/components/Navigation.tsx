@@ -12,8 +12,12 @@ function Navigation({ pathname }: { pathname: string }) {
         <KeypadButton variant="link" to="whoami" active={isActive("whoami")}>
           Who am I?
         </KeypadButton>
-        <KeypadButton variant="link" to="hobbies" active={isActive("hobbies")}>
-          Beyond Work
+        <KeypadButton
+          variant="link"
+          to="interests"
+          active={isActive("interests")}
+        >
+          Interests
         </KeypadButton>
         <KeypadButton variant="link" to="contact" active={isActive("contact")}>
           Let's Connect?

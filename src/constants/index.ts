@@ -5,8 +5,8 @@ export const ROUTES = {
       backgroundClass: "bg-orange",
     },
   },
-  HOBBIES: {
-    key: "hobbies",
+  INTERESTS: {
+    key: "interests",
     meta: {
       backgroundClass: "bg-blue",
     },

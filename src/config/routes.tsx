@@ -1,13 +1,13 @@
 import { RouteObject, Navigate } from "react-router-dom";
 import WhoAmI from "../pages/WhoAmI/WhoAmI";
-import Hobbies from "../pages/Hobbies/Hobbies";
+import Interests from "../pages/Interests/Interests";
 import Contact from "../pages/Contact";
 import { ROUTES } from "./../constants";
-import Art from "../pages/Hobbies/components/Art";
-import Music from "../pages/Hobbies/components/Music";
-import Coffee from "../pages/Hobbies/components/Coffee";
-import Plants from "../pages/Hobbies/components/Plants";
-import Fishes from "../pages/Hobbies/components/Fishes";
+import Art from "../pages/Interests/components/Art";
+import Music from "../pages/Interests/components/Music";
+import Coffee from "../pages/Interests/components/Coffee";
+import Plants from "../pages/Interests/components/Plants";
+import Fishes from "../pages/Interests/components/Fishes";
 export const routes: RouteObject[] = [
   {
     path: "/",
@@ -18,8 +18,8 @@ export const routes: RouteObject[] = [
     element: <WhoAmI />,
   },
   {
-    path: ROUTES.HOBBIES.key,
-    element: <Hobbies />,
+    path: ROUTES.INTERESTS.key,
+    element: <Interests />,
     children: [
       {
         index: true,
