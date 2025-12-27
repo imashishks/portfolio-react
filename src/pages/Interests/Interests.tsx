@@ -12,10 +12,7 @@ function Interests() {
       id: "music",
       label: "Music",
     },
-    {
-      id: "coffee",
-      label: "Coffee",
-    },
+
     {
       id: "plants",
       label: "Plants",

@@ -12,7 +12,7 @@ function WhoAmI() {
         <img
           src={profilePic}
           alt="Profile"
-          className="rounded-full border-3 p-2 w-[150px] mt-8 "
+          className="rounded-full w-[150px] mt-8 "
         />
         <h2 className="mt-4 text-2xl ">
           hello! my name is{" "}
