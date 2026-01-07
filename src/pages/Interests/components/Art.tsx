@@ -1,6 +1,9 @@
 const Art = () => {
   return (
     <div className="mt-10">
+      <p className="text-2xl text-blue mb-8 font-medium">
+        Art is where imagination learns to speak without words
+      </p>
       <p>
         Art has been a part of my life for as long as I can remember. What
         started as scribbling in school notebooks grew into a deep passion for
