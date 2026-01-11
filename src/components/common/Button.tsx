@@ -9,21 +9,30 @@ interface ButtonProps {
   to?: string;
   active?: boolean;
   className?: string;
+  onClick?: () => {};
 }
 
-function Button({ children, variant, to, active, className }: ButtonProps) {
-  const baseClasses = `bg-white px-8 py-2 border-2 shadow-[0_4px_0_rgb(13,13,13)] rounded-lg cursor-pointer ${
+function Button({
+  children,
+  variant,
+  to,
+  active,
+  className,
+  onClick,
+}: ButtonProps) {
+  const baseClasses = `bg-white px-8 py-1 border-2 shadow-[0_4px_0_rgb(13,13,13)] rounded-lg cursor-pointer ${
     className ? className : ""
   }`;
   const activeClasses = "!bg-black text-white";
-  console.log(className);
-  console.log(active);
   return variant === "link" && to ? (
     <Link to={to} className={classNames(baseClasses, active && activeClasses)}>
       {children}
     </Link>
   ) : (
-    <motion.button className={classNames(baseClasses, active && activeClasses)}>
+    <motion.button
+      onClick={onClick}
+      className={classNames(baseClasses, active && activeClasses)}
+    >
       {children}
     </motion.button>
   );

@@ -39,7 +39,7 @@ function Layout({ children }: LayoutProps) {
         backgroundClass
       )}
     >
-      <div className="w-[80%] flex items-end h-[75%] relative">
+      <div className="w-[90%] flex items-end h-[85%] relative">
         <svg width="63" height="44" viewBox="0 0 63 44" fill="none">
           <path d="M63 0V44H0L63 0Z" fill="black" />
         </svg>
@@ -51,7 +51,7 @@ function Layout({ children }: LayoutProps) {
         </svg>
       </div>
 
-      <motion.div className="w-[80%] h-[3px] bg-black rounded-sm mb-6"></motion.div>
+      <motion.div className="w-[90%] h-[3px] bg-black rounded-sm mb-2"></motion.div>
       <Navigation pathname={location.pathname} />
     </div>
   );

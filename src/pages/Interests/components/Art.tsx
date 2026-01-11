@@ -1,3 +1,6 @@
+import ImageGrid from "../../../components/common/ImageGrid";
+import { artImages } from "../../../data/artImages";
+
 const Art = () => {
   return (
     <div className="mt-10">
@@ -10,11 +13,12 @@ const Art = () => {
         colours, shapes, and visual storytelling.
       </p>
       <p className="mt-4">
-        I’m a self-taught artist working with acrylics and digital tools,
+        I'm a self-taught artist working with acrylics and digital tools,
         constantly experimenting, learning, and finding new ways to express
         creativity.
       </p>
       <p className="mt-4">Putting some of my work here.</p>
+      <ImageGrid images={artImages} />
     </div>
   );
 };

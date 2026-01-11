@@ -7,7 +7,7 @@ function Navigation({ pathname }: { pathname: string }) {
   };
 
   return (
-    <nav className="flex justify-center h-25">
+    <nav className="flex justify-center h-20">
       <div className="flex justify-center max-w-lg items-start pt-2 gap-4">
         <KeypadButton variant="link" to="whoami" active={isActive("whoami")}>
           Who am I?
