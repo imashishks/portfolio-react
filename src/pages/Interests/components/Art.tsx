@@ -1,6 +1,6 @@
 import ImageGrid from "../../../components/common/ImageGrid";
 import { artImages } from "../../../data/artImages";
-
+import BentoSample, { BentoGrid } from "../../../components/common/Bento";
 const Art = () => {
   return (
     <div className="mt-10">
@@ -12,13 +12,14 @@ const Art = () => {
         started as scribbling in school notebooks grew into a deep passion for
         colours, shapes, and visual storytelling.
       </p>
-      <p className="mt-4">
+      <p className="mt-2">
         I'm a self-taught artist working with acrylics and digital tools,
         constantly experimenting, learning, and finding new ways to express
         creativity.
       </p>
-      <p className="mt-4">Putting some of my work here.</p>
-      <ImageGrid images={artImages} />
+      <p className="mt-2">Putting some of my work here.</p>
+      <BentoGrid items={artImages} />
+
     </div>
   );
 };

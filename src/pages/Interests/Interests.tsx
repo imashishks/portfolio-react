@@ -4,13 +4,14 @@ import { ROUTES } from "../../constants";
 
 function Interests() {
   const tabs = [
-    {
-      id: "art",
-      label: "Art",
-    },
+
     {
       id: "music",
       label: "Music",
+    },
+    {
+      id: "art",
+      label: "Art",
     },
 
     {

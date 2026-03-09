@@ -15,7 +15,7 @@ function TabLayout({ children, tabs, basePath = "" }: TabLayoutProps) {
   const location = useLocation();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("");
-
+  const [loadChildren, setLoadChildren] = useState(false);
   // Sync activeTab with current route
   useEffect(() => {
     if (Array.isArray(tabs) && tabs.length > 0) {
@@ -40,6 +40,9 @@ function TabLayout({ children, tabs, basePath = "" }: TabLayoutProps) {
       navigate(tabId);
     }
   };
+  const handleAnimationComplete = () => {
+    console.log("animation completeds");
+  };
   return (
     <motion.div
       initial={{ height: "0" }}
@@ -52,7 +55,7 @@ function TabLayout({ children, tabs, basePath = "" }: TabLayoutProps) {
           initial={{ opacity: "0" }}
           animate={{ opacity: "100%" }}
           transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1], delay: 0.3 }}
-          className="flex gap-1 absolute rotate-90 top-0 right-0 transform-[translate(100%,-50%)] origin-right"
+          className="flex gap-1 absolute rotate-90 top-0 right-0 transform-[translate(100%,-49%)] origin-right"
         >
           {tabs.map((item) => (
             <motion.button
@@ -79,9 +82,10 @@ function TabLayout({ children, tabs, basePath = "" }: TabLayoutProps) {
           initial={{ opacity: 0, filter: "blur(10px)" }}
           animate={{ opacity: 1, filter: "blur(0px)" }}
           transition={{ duration: 0.3, ease: "easeOut", delay: 0.1 }}
+          onAnimationComplete={() => setLoadChildren(true)}
           className="flex justify-center items-center h-full overflow-y-auto scroll-fade"
         >
-          {children}
+          {loadChildren && children}
         </motion.div>
       </main>
     </motion.div>
