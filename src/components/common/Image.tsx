@@ -1,112 +1,83 @@
-import { useState, useEffect } from "react";
-import { ArtImage } from "../../data/artImages";
 import Button from "./Button";
+import { ArtImage } from "../../data/artImages";
+
+// Preload all thumbnails and highres images at build time so Vite
+// includes them in the dist and gives us the final URLs.
+const thumbnailMap = (import.meta as any).glob(
+  "../../assets/images/art/thumbnails/*.webp",
+  { eager: true, as: "url" }
+) as Record<string, string>;
+
+const highresJpgMap = (import.meta as any).glob(
+  "../../assets/images/art/highres/*.jpg",
+  { eager: true, as: "url" }
+) as Record<string, string>;
+
+const highresPngMap = (import.meta as any).glob(
+  "../../assets/images/art/highres/*.png",
+  { eager: true, as: "url" }
+) as Record<string, string>;
 
 interface ImageProps {
-    image: ArtImage;
+  image: ArtImage;
 }
 
 function Image({ image }: ImageProps) {
-    const [imageLoaded, setImageLoaded] = useState(false);
-    const [thumbnailSrc, setThumbnailSrc] = useState("");
+  const isLandscape = image.orientation === "landscape";
 
-    const isLandscape = image.orientation === "landscape";
-    const isPortrait = image.orientation === "potrait"; // note: \"potrait\" in data
+  const thumbnailKey = `../../assets/images/art/thumbnails/${image.name}.webp`;
+  const highresJpgKey = `../../assets/images/art/highres/${image.name}.jpg`;
+  const highresPngKey = `../../assets/images/art/highres/${image.name}.png`;
 
-    useEffect(() => {
-        // Dynamically import the thumbnail
-        import(`../../assets/images/art/thumbnails/${image.name}.webp`)
-            .then((module) => {
-                setThumbnailSrc(module.default);
-                const img = new window.Image();
-                img.src = module.default;
+  const thumbnailSrc = thumbnailMap[thumbnailKey];
+  const highresSrc = highresJpgMap[highresJpgKey] ?? highresPngMap[highresPngKey];
+  const highresExt = highresJpgMap[highresJpgKey] ? "jpg" : "png";
 
-                img.onload = () => {
-                    setImageLoaded(true);
-                };
-            })
-            .catch((error) => {
-                console.error("Error loading thumbnail:", error);
-            });
-    }, [image.name]);
-
-    const handleDownload = async () => {
-        try {
-            // Try .jpg first, then .png
-            const extensions = ["jpg", "png"];
-            let highresModule = null;
-            let extension = "";
-
-            for (const ext of extensions) {
-                try {
-                    highresModule = await import(
-                        `../../assets/images/art/highres/${image.name}.${ext}`
-                    );
-                    extension = ext;
-                    break;
-                } catch (e) {
-                    continue;
-                }
-            }
-
-            if (!highresModule) {
-                console.error("Highres image not found");
-                return;
-            }
-
-            const response = await fetch(highresModule.default);
-            const blob = await response.blob();
-            const url = window.URL.createObjectURL(blob);
-            const link = document.createElement("a");
-            link.href = url;
-            link.download = `${image.name}.${extension}`;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            window.URL.revokeObjectURL(url);
-        } catch (error) {
-            console.error("Error downloading image:", error);
-        }
-    };
-
-    if (!imageLoaded) {
-        return (
-            <div
-                className={`bg-gray-200 animate-pulse rounded-lg ${isLandscape ? "w-full h-[200px]" : "w-[200px] mx-auto"
-                    }`}
-            ></div>
-        );
+  const handleDownload = () => {
+    if (!highresSrc) {
+      console.error("Highres image not found for", image.name);
+      return;
     }
 
-    return (
-        <div className="flex flex-col gap-2">
-            <div
-                className={
-                    isLandscape
-                        ? "w-full h-[200px] overflow-hidden rounded-lg border-2"
-                        : "w-[200px]  mx-auto overflow-hidden rounded-lg border-2"
-                }
-            >
-                {thumbnailSrc && (
-                    <img
-                        src={thumbnailSrc}
-                        alt={image.title}
-                        className="w-full h-full object-cover"
-                        loading="lazy"
-                    />
-                )}
-            </div>
+    const link = document.createElement("a");
+    link.href = highresSrc;
+    link.download = `${image.name}.${highresExt}`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
 
-            <div className="flex justify-between items-center mt-2">
-                <h3 className="text-black text-sm font-medium truncate">
-                    {image.title}
-                </h3>
-                <Button className="px-4! py-1! text-xs!" onClick={handleDownload}>
-                    Download
-                </Button>
-            </div>
-        </div>
-    );
+  return (
+    <div className="flex flex-col gap-2">
+      <div
+        className={
+          isLandscape
+            ? "w-full h-[200px] overflow-hidden rounded-lg border-2"
+            : "w-[200px] h-[200px] mx-auto overflow-hidden rounded-lg border-2"
+        }
+      >
+        {thumbnailSrc ? (
+          <img
+            src={thumbnailSrc}
+            alt={image.title}
+            className="w-full h-full object-cover"
+            loading="lazy"
+          />
+        ) : (
+          <div className="w-full h-full bg-gray-200 animate-pulse" />
+        )}
+      </div>
+
+      <div className="flex justify-between items-center mt-2">
+        <h3 className="text-black text-sm font-medium truncate">
+          {image.title}
+        </h3>
+        <Button className="px-4! py-1! text-xs!" onClick={handleDownload}>
+          Download
+        </Button>
+      </div>
+    </div>
+  );
 }
 
 export default Image;

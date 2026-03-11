@@ -80,10 +80,10 @@ export default function RecordPlayer() {
   const [tracks, setTracks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [duration, setDuration] = useState(0);
-  const [progress, setProgress] = useState(0);
+
   const [activeIndex, setActiveIndex] = useState(null);
   const [volume, setVolume] = useState(0.8);
-  const audioRef = useRef(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
   useEffect(() => {
     fetch(API_URL)
       .then((r) => r.json())
@@ -93,7 +93,7 @@ export default function RecordPlayer() {
       })
       .catch(() => setLoading(false));
   }, []);
-  const animFrameRef = useRef(null);
+  const animFrameRef = useRef<number | null>(null);
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
@@ -101,7 +101,7 @@ export default function RecordPlayer() {
     const onLoaded = () => setDuration(audio.duration);
     const onEnded = () => {
       setIsPlaying(false);
-      setProgress(0);
+      setIsPlaying(false);
       // Auto-play next
       const next = activeIndex + 1;
       if (next < tracks.length && tracks[next].previewUrl) {
@@ -109,20 +109,34 @@ export default function RecordPlayer() {
       }
     };
 
+    const onPlay = () => {
+      if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
+      animFrameRef.current = requestAnimationFrame(tick);
+    }
+    const onPause = () => {
+      if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
+    }
+
     audio.addEventListener("loadedmetadata", onLoaded);
     audio.addEventListener("ended", onEnded);
+    audio.addEventListener("play", onPlay);
+    audio.addEventListener("pause", onPause);
+
     return () => {
       audio.removeEventListener("loadedmetadata", onLoaded);
       audio.removeEventListener("ended", onEnded);
+      audio.removeEventListener("play", onPlay);
+      audio.removeEventListener("pause", onPause);
+      if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
     };
   }, [activeIndex, tracks]);
 
-  // const tick = () => {
-  //   if (audioRef.current) {
-  //     setProgress(audioRef.current.currentTime);
-  //     animFrameRef.current = requestAnimationFrame(tick);
-  //   }
-  // };
+  const tick = () => {
+    if (audioRef.current) {
+      setCurrentTime(audioRef.current.currentTime);
+      animFrameRef.current = requestAnimationFrame(tick);
+    }
+  };
 
   const seekBarRef = useRef<HTMLDivElement>(null);
 
@@ -133,29 +147,41 @@ export default function RecordPlayer() {
     console.log(" Track ", track)
     if (!track?.previewUrl) return;
 
-    // // cancelAnimationFrame(animFrameRef.current);
+    if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
     const audio = audioRef.current;
+    if (!audio) return;
+    
+    setCurrentTime(0);
+    audio.currentTime = 0; // force native reset
     audio.src = track.previewUrl;
     audio.volume = volume;
     audio.play();
+
     const index = tracks.find((item: Song) => item.id === track.id)
     setActiveIndex(index);
     setIsPlaying(true);
-    setProgress(0);
-    // animFrameRef.current = requestAnimationFrame(tick);
 
-  }, []);
+  }, [volume, tracks]);
 
   const pauseTrack = useCallback((): void => {
-    // TODO: pause current audio
+    if (audioRef.current) {
+      audioRef.current.pause();
+    }
+    if (animFrameRef.current) {
+      cancelAnimationFrame(animFrameRef.current);
+    }
   }, []);
 
   const resumeTrack = useCallback((): void => {
-    // TODO: resume current audio
+    if (audioRef.current) {
+      audioRef.current.play();
+    }
   }, []);
 
   const seekTo = useCallback((_seconds: number): void => {
-    // TODO: seek audio to _seconds
+    if (audioRef.current) {
+      audioRef.current.currentTime = _seconds;
+    }
   }, []);
 
   // ── Interaction handlers ────────────────────────────────────────────────────
@@ -182,11 +208,17 @@ export default function RecordPlayer() {
     }
   };
 
-  const handleSeekClick = (e: React.MouseEvent<HTMLDivElement>): void => {
+  const handleSeekPointer = (e: React.PointerEvent<HTMLDivElement>): void => {
     if (!activeSong || !seekBarRef.current) return;
+    if (e.type === "pointerdown") {
+      e.currentTarget.setPointerCapture(e.pointerId);
+    }
+    if (e.type === "pointermove" && e.buttons !== 1) return;
+
     const rect = seekBarRef.current.getBoundingClientRect();
     const ratio = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
-    const newTime = ratio * activeSong.durationSecs;
+    const trackDuration = duration || activeSong.durationSecs || 30;
+    const newTime = ratio * trackDuration;
     setCurrentTime(newTime);
     seekTo(newTime);
   };
@@ -197,16 +229,22 @@ export default function RecordPlayer() {
 
   // ── Derived values ──────────────────────────────────────────────────────────
 
-  const vinylCover: string | null = activeSong?.cover ?? null;
+  const vinylCover: string | null = activeSong?.albumArt ?? null;
   const tonearmAngle: number = activeSong ? 20 : 3;
   const progressPct: number = activeSong
-    ? (currentTime / activeSong.durationSecs) * 100
+    ? (currentTime / (duration || activeSong.durationSecs || 30)) * 100
     : 0;
 
   // ── Render ──────────────────────────────────────────────────────────────────
 
   return (
     <>
+      <style>{`
+        @keyframes record-spin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+      `}</style>
       <div
         style={{
           fontFamily: "'Helvetica Neue', Arial, sans-serif",
@@ -279,9 +317,7 @@ export default function RecordPlayer() {
                 />
 
                 {/* Spinning disc */}
-                <motion.div
-                  animate={{ rotate: isPlaying && activeSong ? 360 : 0 }}
-                  transition={{ repeat: Infinity, duration: 3.5, ease: "linear" }}
+                <div
                   style={{
                     width: "248px",
                     height: "248px",
@@ -292,6 +328,8 @@ export default function RecordPlayer() {
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
+                    animation: "record-spin 3.5s linear infinite",
+                    animationPlayState: isPlaying && activeSong ? "running" : "paused",
                   }}
                 >
                   {/* Album art */}
@@ -384,7 +422,7 @@ export default function RecordPlayer() {
                       }}
                     />
                   </div>
-                </motion.div>
+                </div>
               </div>
 
               {/* ── TONEARM ── */}
@@ -527,7 +565,8 @@ export default function RecordPlayer() {
                   {/* Track */}
                   <div
                     ref={seekBarRef}
-                    onClick={handleSeekClick}
+                    onPointerDown={handleSeekPointer}
+                    onPointerMove={handleSeekPointer}
                     style={{
                       height: "5px",
                       background: "#e8e8e8",
@@ -538,26 +577,27 @@ export default function RecordPlayer() {
                     }}
                   >
                     {/* Filled progress */}
-                    <div
+                    <motion.div
+                      animate={{ width: `${progressPct}%` }}
+                      transition={{ duration: 0.1, ease: "linear" }}
                       style={{
                         position: "absolute",
                         left: 0,
                         top: 0,
                         height: "100%",
-                        width: `${progressPct}%`,
                         background: activeSong
                           ? "linear-gradient(to right, #e05c20, #f07840)"
                           : "#d8d8d8",
                         borderRadius: "3px",
-                        transition: "width 0.25s linear, background 0.3s ease",
                       }}
                     />
                     {/* Thumb */}
                     <motion.div
+                      animate={{ left: `${progressPct}%` }}
+                      transition={{ duration: 0.1, ease: "linear" }}
                       style={{
                         position: "absolute",
                         top: "50%",
-                        left: `${progressPct}%`,
                         transform: "translate(-50%, -50%)",
                         width: "13px",
                         height: "13px",
@@ -568,7 +608,6 @@ export default function RecordPlayer() {
                         boxShadow: activeSong
                           ? "0 1px 4px rgba(224,92,32,0.3), 0 1px 2px rgba(0,0,0,0.15)"
                           : "0 1px 3px rgba(0,0,0,0.12)",
-                        transition: "left 0.25s linear",
                         pointerEvents: "none",
                       }}
                       whileHover={{ scale: 1.3 }}

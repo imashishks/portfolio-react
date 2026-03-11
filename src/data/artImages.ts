@@ -63,7 +63,7 @@ export const artImages: ArtImage[] = [
   },
 
 
-  { name: "lost", title: "Lost", orientation: "potrait", thumbnail: "../../assets/images/art/thumbnails/lost.webp",highres: "../../assets/images/art/highres/lost.jpg", border: false },
+  { name: "lost", title: "Lost", orientation: "potrait", thumbnail: "../../assets/images/art/thumbnails/lost.webp", highres: "../../assets/images/art/highres/lost.jpg", border: false },
   {
     name: "kantara",
     title: "Kantara",
@@ -80,7 +80,7 @@ export const artImages: ArtImage[] = [
     highres: "../../assets/images/art/highres/steallikeanartist.jpg",
     border: false,
   },
-  { name: "stepup", title: "Step Up", orientation: "landscape", thumbnail: "../../assets/images/art/thumbnails/stepup.webp", border: false,highres: "../../assets/images/art/highres/stepup.jpg", },
+  { name: "stepup", title: "Step Up", orientation: "landscape", thumbnail: "../../assets/images/art/thumbnails/stepup.webp", border: false, highres: "../../assets/images/art/highres/stepup.jpg", },
 
 
 

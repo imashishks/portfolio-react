@@ -9,7 +9,7 @@ interface ButtonProps {
   to?: string;
   active?: boolean;
   className?: string;
-  onClick?: () => {};
+  onClick?: () => void;
 }
 
 function Button({
