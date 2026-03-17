@@ -150,7 +150,7 @@ export default function RecordPlayer() {
     if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
     const audio = audioRef.current;
     if (!audio) return;
-    
+
     setCurrentTime(0);
     audio.currentTime = 0; // force native reset
     audio.src = track.previewUrl;
@@ -268,7 +268,7 @@ export default function RecordPlayer() {
           {/* ═══════════════════════════════════════════════════════════════
             RECORD PLAYER
         ═══════════════════════════════════════════════════════════════ */}
-          <div style={{ flexShrink: 0 }}>
+          <div style={{ position: "relative", flexShrink: 0 }}>
 
             {/* Player chassis */}
             <div
@@ -276,11 +276,11 @@ export default function RecordPlayer() {
                 width: "360px",
                 height: "340px",
                 background: "#ffffff",
-                borderRadius: "22px",
+                borderRadius: "20px",
+                zIndex: 1,
                 position: "relative",
-                boxShadow:
-                  "0 2px 4px rgba(0,0,0,0.04), 0 8px 24px rgba(0,0,0,0.08), 0 24px 64px rgba(0,0,0,0.06)",
-                border: "1px solid rgba(0,0,0,0.06)",
+                // boxShadow:"0 2px 4px rgba(0,0,0,0.04), 0 8px 24px rgba(0,0,0,0.08), 0 24px 64px rgba(0,0,0,0.06)",
+                border: "2px solid rgba(0,0,0)",
                 overflow: "visible",
               }}
             >
@@ -301,7 +301,7 @@ export default function RecordPlayer() {
                 style={{
                   position: "absolute",
                   top: "26px",
-                  left: "26px",
+                  left: "52px",
                   width: "248px",
                   height: "248px",
                 }}
@@ -427,36 +427,44 @@ export default function RecordPlayer() {
 
               {/* ── TONEARM ── */}
               <motion.div
-                animate={{ rotate: tonearmAngle }}
-                transition={{ duration: 0.9, ease: [0.34, 1.05, 0.64, 1] }}
+
+
                 style={{
                   position: "absolute",
                   top: "16px",
                   right: "22px",
-                  transformOrigin: "top right",
+
                   zIndex: 20,
                 }}
               >
                 <div
                   style={{
                     position: "absolute",
-                    top: "-4px", right: "-4px",
+                    top: "-4px", right: "3px",
                     width: "20px", height: "20px",
                     borderRadius: "50%",
-                    background: "linear-gradient(145deg, #e8e8e8, #c0c0c0)",
-                    boxShadow: "0 2px 6px rgba(0,0,0,0.15)",
+                    // background: "linear-gradient(145deg, #e8e8e8, #c0c0c0)",
+                    // boxShadow: "0 2px 6px rgba(0,0,0,0.15)",
                     zIndex: 21,
+                    border: "2px solid #000",
+                    background: "#fff"
                   }}
                 />
-                <div
+                <motion.div
+                  animate={{ rotate: tonearmAngle }}
+                  transition={{ duration: 0.9, ease: [0.34, 1.05, 0.64, 1] }}
                   style={{
+                    transformOrigin: "top right",
                     width: "7px",
                     height: "136px",
-                    background: "linear-gradient(to right, #e0e0e0, #c0c0c0, #d8d8d8)",
+                    // background: "linear-gradient(to right, #e0e0e0, #c0c0c0, #d8d8d8)",
                     borderRadius: "4px",
                     marginRight: "7px",
-                    boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
+                    // boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
                     position: "relative",
+                    background: "#2592c1",
+
+                    border: "2px solid #000"
                   }}
                 >
                   <div
@@ -464,23 +472,26 @@ export default function RecordPlayer() {
                       position: "absolute",
                       bottom: "-10px", left: "50%",
                       transform: "translateX(-50%) rotate(-18deg)",
-                      width: "16px", height: "22px",
-                      background: "linear-gradient(145deg, #d8d8d8, #b8b8b8)",
-                      borderRadius: "3px 3px 5px 5px",
-                      boxShadow: "0 2px 8px rgba(0,0,0,0.12)",
+                      width: "22px", height: "22px",
+                      // background: "linear-gradient(145deg, #d8d8d8, #b8b8b8)",
+                      borderRadius: "20px",
+                      background: "#fff",
+                      border: "2px solid #000"
+                      // boxShadow: "0 2px 8px rgba(0,0,0,0.12)",
                     }}
                   />
                   <div
                     style={{
                       position: "absolute",
-                      bottom: "-24px", left: "50%",
+                      bottom: "-17px", left: "50%",
                       transform: "translateX(-50%)",
-                      width: "2px", height: "9px",
-                      background: "#e05c20",
+                      width: "6px", height: "9px",
+                      background: "#2592c1",
                       borderRadius: "0 0 2px 2px",
+                      border: "2px solid #000"
                     }}
                   />
-                </div>
+                </motion.div>
               </motion.div>
 
               {/* ── BOTTOM CONTROLS ── */}
@@ -498,21 +509,18 @@ export default function RecordPlayer() {
                 {/* Play / Pause button */}
                 <motion.button
                   onClick={handlePlayPause}
-                  whileTap={{ scale: 0.92 }}
-                  whileHover={{ scale: 1.06 }}
+                  // whileTap={{ scale: 0.92 }}
+                  // whileHover={{ scale: 1.06 }}
                   disabled={!activeSong}
                   style={{
                     width: "38px",
                     height: "38px",
                     borderRadius: "50%",
-                    border: "none",
+
+                    border: "2px solid #000",
                     cursor: activeSong ? "pointer" : "default",
-                    background: activeSong
-                      ? "linear-gradient(145deg, #e05c20, #c04010)"
-                      : "linear-gradient(145deg, #e8e8e8, #d0d0d0)",
-                    boxShadow: activeSong
-                      ? "3px 3px 8px rgba(224,92,32,0.35), -1px -1px 4px rgba(255,255,255,0.5)"
-                      : "3px 3px 8px rgba(0,0,0,0.1), -1px -1px 4px rgba(255,255,255,0.9)",
+                    // background: activeSong ? "linear-gradient(145deg, #e05c20, #c04010)": "linear-gradient(145deg, #e8e8e8, #d0d0d0)",
+                    // boxShadow: activeSong? "3px 3px 8px rgba(224,92,32,0.35), -1px -1px 4px rgba(255,255,255,0.5)": "3px 3px 8px rgba(0,0,0,0.1), -1px -1px 4px rgba(255,255,255,0.9)",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
@@ -523,41 +531,42 @@ export default function RecordPlayer() {
                   }}
                   aria-label={isPlaying ? "Pause" : "Play"}
                 >
-                  <AnimatePresence mode="wait" initial={false}>
-                    {isPlaying ? (
-                      /* Pause icon */
-                      <motion.svg
-                        key="pause"
-                        initial={{ opacity: 0, scale: 0.6 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.6 }}
-                        transition={{ duration: 0.15 }}
-                        width="14"
-                        height="14"
-                        viewBox="0 0 14 14"
-                        fill="none"
-                      >
-                        <rect x="2" y="2" width="3.5" height="10" rx="1" fill={activeSong ? "#fff" : "#aaa"} />
-                        <rect x="8.5" y="2" width="3.5" height="10" rx="1" fill={activeSong ? "#fff" : "#aaa"} />
-                      </motion.svg>
-                    ) : (
-                      /* Play icon */
-                      <motion.svg
-                        key="play"
-                        initial={{ opacity: 0, scale: 0.6 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.6 }}
-                        transition={{ duration: 0.15 }}
-                        width="14"
-                        height="14"
-                        viewBox="0 0 14 14"
-                        fill="none"
-                        style={{ marginLeft: "2px" }}
-                      >
-                        <path d="M3 2L12 7L3 12V2Z" fill={activeSong ? "#fff" : "#aaa"} />
-                      </motion.svg>
-                    )}
-                  </AnimatePresence>
+                  {/* <AnimatePresence mode="wait" initial={false}> */}
+                  {isPlaying ? (
+                    /* Pause icon */
+                    <motion.svg
+                      key="pause"
+                      // initial={{ opacity: 0, scale: 0.6 }}
+                      // animate={{ opacity: 1, scale: 1 }}
+                      // exit={{ opacity: 0, scale: 0.6 }}
+                      transition={{ duration: 0.15 }}
+                      width="14"
+                      height="14"
+                      viewBox="0 0 14 14"
+                      fill="none"
+                    >
+                      <rect x="2" y="2" width="3.5" height="10" rx="1" fill="#000" />
+                      <rect x="8.5" y="2" width="3.5" height="10" rx="1" fill="#000" />
+                    </motion.svg>
+                  ) : (
+                    /* Play icon */
+                    <motion.svg
+                      key="play"
+                      // initial={{ opacity: 0, scale: 0.6 }}
+                      // animate={{ opacity: 1, scale: 1 }}
+                      // exit={{ opacity: 0, scale: 0.6 }}
+                      transition={{ duration: 0.15 }}
+                      width="14"
+                      height="14"
+                      viewBox="0 0 14 14"
+                      fill="none"
+
+                      style={{ marginLeft: "2px" }}
+                    >
+                      <path d="M3 2L12 7L3 12V2Z" fill="#000" />
+                    </motion.svg>
+                  )}
+                  {/* </AnimatePresence> */}
                 </motion.button>
 
                 {/* Seek bar + time */}
@@ -568,12 +577,16 @@ export default function RecordPlayer() {
                     onPointerDown={handleSeekPointer}
                     onPointerMove={handleSeekPointer}
                     style={{
-                      height: "5px",
+                      height: "10px",
                       background: "#e8e8e8",
-                      borderRadius: "3px",
-                      boxShadow: "inset 0 1px 3px rgba(0,0,0,0.08)",
+                      
+                      left: 0,
+                        top: "1px",
+                      borderRadius: "11px",
+                      // boxShadow: "inset 0 1px 3px rgba(0,0,0,0.08)",
                       position: "relative",
                       cursor: activeSong ? "pointer" : "default",
+                      border: "2px solid #000"
                     }}
                   >
                     {/* Filled progress */}
@@ -582,13 +595,16 @@ export default function RecordPlayer() {
                       transition={{ duration: 0.1, ease: "linear" }}
                       style={{
                         position: "absolute",
-                        left: 0,
-                        top: 0,
-                        height: "100%",
+                        left: "-2px",
+                        top: "-2px",
+                        height: "10px",
                         background: activeSong
-                          ? "linear-gradient(to right, #e05c20, #f07840)"
+                          ? "#2592c1"
                           : "#d8d8d8",
-                        borderRadius: "3px",
+                        borderRadius: "11px",
+                        //  background: "#2592c1",
+                        // borderRadius: "0 0 2px 2px",
+                        border: "2px solid #000"
                       }}
                     />
                     {/* Thumb */}
@@ -597,17 +613,19 @@ export default function RecordPlayer() {
                       transition={{ duration: 0.1, ease: "linear" }}
                       style={{
                         position: "absolute",
-                        top: "50%",
+                        top: "60%",
                         transform: "translate(-50%, -50%)",
-                        width: "13px",
-                        height: "13px",
+                        width: "16px",
+                        height: "16px",
                         borderRadius: "50%",
-                        background: activeSong
-                          ? "linear-gradient(145deg, #f4f4f4, #e0e0e0)"
-                          : "linear-gradient(145deg, #f0f0f0, #d8d8d8)",
-                        boxShadow: activeSong
-                          ? "0 1px 4px rgba(224,92,32,0.3), 0 1px 2px rgba(0,0,0,0.15)"
-                          : "0 1px 3px rgba(0,0,0,0.12)",
+                        background: "#fff",
+                        border: "2px solid #000",
+                        // background: activeSong
+                        //   ? "linear-gradient(145deg, #f4f4f4, #e0e0e0)"
+                        //   : "linear-gradient(145deg, #f0f0f0, #d8d8d8)",
+                        // boxShadow: activeSong
+                        //   ? "0 1px 4px rgba(224,92,32,0.3), 0 1px 2px rgba(0,0,0,0.15)"
+                        //   : "0 1px 3px rgba(0,0,0,0.12)",
                         pointerEvents: "none",
                       }}
                       whileHover={{ scale: 1.3 }}
@@ -615,7 +633,7 @@ export default function RecordPlayer() {
                   </div>
 
                   {/* Time labels */}
-                  <div
+                  {/* <div
                     style={{
                       display: "flex",
                       justifyContent: "space-between",
@@ -628,7 +646,7 @@ export default function RecordPlayer() {
                   >
                     <span>{formatTime(currentTime)}</span>
                     <span>{activeSong ? activeSong.duration : "0:00"}</span>
-                  </div>
+                  </div> */}
                 </div>
 
                 {/* Decorative knob (right) */}
@@ -637,8 +655,9 @@ export default function RecordPlayer() {
                     width: "38px",
                     height: "38px",
                     borderRadius: "50%",
-                    background: "linear-gradient(145deg, #f2f2f2, #d0d0d0)",
-                    boxShadow: "3px 3px 8px rgba(0,0,0,0.1), -1px -1px 4px rgba(255,255,255,0.9)",
+                    border: "2px solid #000",
+                    // background: "linear-gradient(145deg, #f2f2f2, #d0d0d0)",
+                    // boxShadow: "3px 3px 8px rgba(0,0,0,0.1), -1px -1px 4px rgba(255,255,255,0.9)",
                     flexShrink: 0,
                     position: "relative",
                     display: "flex",
@@ -650,14 +669,27 @@ export default function RecordPlayer() {
                   <div
                     style={{
                       width: "2px",
-                      height: "8px",
-                      background: "#bbb",
+                      height: "16px",
+                      transform: "rotate(45deg)",
+                      background: "#000",
                       borderRadius: "1px",
-                      marginBottom: "4px",
                     }}
                   />
                 </div>
               </div>
+            </div>
+            <div style={{
+              position: "absolute",
+              width: "360px",
+              height: "350px",
+              background: "#000",
+              borderRadius: "32px",
+              // boxShadow:"0 2px 4px rgba(0,0,0,0.04), 0 8px 24px rgba(0,0,0,0.08), 0 24px 64px rgba(0,0,0,0.06)",
+              border: "2px solid rgba(0,0,0)",
+              overflow: "visible",
+              top: "0"
+            }}>
+
             </div>
 
             {/* Now playing label */}
