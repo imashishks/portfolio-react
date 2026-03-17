@@ -19,19 +19,18 @@ const skills = [
 ];
 export default function Skills() {
   return (
-    <motion.section className="mt-16 w-full">
-      <h3 className="mb-4 font-bold text-orange">skills</h3>
-      <motion.section
-        initial="hidden"
-        animate="visible"
+    <section className="mt-16 w-full">
+      <motion.h3 
         variants={{
-          hidden: {},
-          visible: {
-            transition: {
-              staggerChildren: 0.12,
-            },
-          },
+          hidden: { opacity: 0, y: 16 },
+          visible: { opacity: 1, y: 0 },
         }}
+        transition={{ duration: 0.4, ease: "easeOut" }}
+        className="mb-4 font-bold text-orange"
+      >
+        skills
+      </motion.h3>
+      <section
         className="grid grid-cols-2 gap-x-16 gap-y-4 max-w-4xl"
       >
         {skills.map((item, index) => (
@@ -47,7 +46,7 @@ export default function Skills() {
             <p className="text-xs text-neutral-500">{item.skill}</p>
           </motion.div>
         ))}
-      </motion.section>
-    </motion.section>
+      </section>
+    </section>
   );
 }

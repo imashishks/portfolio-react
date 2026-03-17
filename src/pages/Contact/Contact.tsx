@@ -32,42 +32,40 @@ function Contact() {
   }
   return (
     <TabLayout>
-      <div className=" mt-8 flex  flex-col w-5/6 h-full">
-
-        <motion.h2 variants={{
+      <motion.div 
+        initial="hidden"
+        animate="visible"
+        variants={{
           hidden: {},
           visible: {
             transition: {
               staggerChildren: 0.12,
             },
           },
-        }} className="mt-8 text-4xl ">
+        }}
+        className=" mt-8 flex flex-col w-5/6 h-full"
+      >
+
+        <motion.h2 variants={{
+          hidden: { opacity: 0, y: 16 },
+          visible: { opacity: 1, y: 0 },
+        }} 
+        transition={{ duration: 0.4, ease: "easeOut" }}
+        className="mt-8 text-4xl ">
           Don’t Hesitate to Reach Out !
         </motion.h2>
         <motion.p variants={{
-          hidden: {},
-          visible: {
-            transition: {
-              staggerChildren: 0.12,
-            },
-          },
-        }} className="mt-8  text-sm">
+          hidden: { opacity: 0, y: 16 },
+          visible: { opacity: 1, y: 0 },
+        }} 
+        transition={{ duration: 0.4, ease: "easeOut" }}
+        className="mt-8  text-sm">
           Let’s talk about UI/UX, art, problem solving, hobbies and life in general :)
         </motion.p>
 
         <motion.section className="mt-8 w-full">
 
           <motion.section
-            initial="hidden"
-            animate="visible"
-            variants={{
-              hidden: {},
-              visible: {
-                transition: {
-                  staggerChildren: 0.12,
-                },
-              },
-            }}
             className="grid grid-cols-2 gap-x-16 gap-y-4 max-w-4xl"
           >
             {contactDetails.map((details, index) => (
@@ -106,7 +104,7 @@ function Contact() {
             ))}
           </motion.section>
         </motion.section>
-      </div>
+      </motion.div>
     </TabLayout>
   );
 }
