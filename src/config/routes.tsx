@@ -1,7 +1,7 @@
 import { RouteObject, Navigate } from "react-router-dom";
 import WhoAmI from "../pages/WhoAmI/WhoAmI";
 import Interests from "../pages/Interests/Interests";
-import Contact from "../pages/Contact";
+import Contact from "../pages/Contact/Contact";
 import { ROUTES } from "./../constants";
 import Art from "../pages/Interests/components/Art";
 import Music from "../pages/Interests/components/Music";
