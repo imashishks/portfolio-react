@@ -14,14 +14,14 @@ function Interests() {
       label: "Art",
     },
 
-    {
-      id: "plants",
-      label: "Plants",
-    },
-    {
-      id: "fishes",
-      label: "Fishes",
-    },
+    // {
+    //   id: "plants",
+    //   label: "Plants",
+    // },
+    // {
+    //   id: "fishes",
+    //   label: "Fishes",
+    // },
   ];
   return (
     <TabLayout tabs={tabs} basePath={ROUTES.INTERESTS.key}>

@@ -29,7 +29,7 @@ function WhoAmI() {
           transition={{ duration: 0.4, ease: "easeOut" }}
           src={profilePic}
           alt="Profile"
-          className="rounded-full w-[150px] mt-8 "
+          className="rounded-full w-[150px] min-w-[150px] min-h-[150px] mt-8 "
         />
         <motion.h2 
           variants={{
