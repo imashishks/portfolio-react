@@ -104,7 +104,7 @@ const Music = () => {
         storytelling. For me, music isn’t just a hobby, it’s a way to feel alive,
         connect with people, and discover new emotions every day.
       </p>
-      <h3 className="mt-8 mb-8 font-bold text-blue">what am i listening to these days?</h3>
+      <h3 className="mt-8 mb-8 font-semibold ">what am i listening to these days?</h3>
 
 
 

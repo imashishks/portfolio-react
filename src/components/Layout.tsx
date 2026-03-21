@@ -3,8 +3,7 @@ import Navigation from "./Navigation";
 import { useLocation } from "react-router-dom";
 import { ROUTES } from "../constants";
 import classNames from "classnames";
-import { motion } from "motion/react";
-
+import Groove from "../assets/images/groove.svg?react";
 interface LayoutProps {
   children: ReactNode;
 }
@@ -32,6 +31,7 @@ function Layout({ children }: LayoutProps) {
   const backgroundClass =
     ROUTES[activeRouteKey as keyof typeof ROUTES]?.meta.backgroundClass ||
     ROUTES.WHOAMI.meta.backgroundClass;
+  const grooveClass = ROUTES[activeRouteKey as keyof typeof ROUTES]?.meta.grooveClass || ROUTES.WHOAMI.meta.grooveClass;
   return (
     <div
       className={classNames(
@@ -39,19 +39,22 @@ function Layout({ children }: LayoutProps) {
         backgroundClass
       )}
     >
-      <div className="w-[90%] flex items-end h-[85%] relative">
-        <svg width="63" height="44" viewBox="0 0 63 44" fill="none">
-          <path d="M63 0V44H0L63 0Z" fill="black" />
-        </svg>
+      <div className="w-[80%] flex items-end h-[85%] relative">
+        {/* <svg width="63" height="44" viewBox="0 0 63 44" fill="none">
+          <path d="M63 0 A 63 44 0 0 0 0 44 L 63 44 Z" fill="black" />
+        </svg> */}
+        <Groove className={classNames(grooveClass)} />
+
 
         {children}
 
-        <svg width="63" height="44" viewBox="0 0 63 44" fill="none">
-          <path d="M5.32134e-07 0V44H63L5.32134e-07 0Z" fill="black" />
-        </svg>
+        {/* <svg width="63" height="44" viewBox="0 0 63 44" fill="none">
+          <path d="M0 0 A 63 44 0 0 1 63 44 L 0 44 Z" fill="black" />
+        </svg> */}
+        <Groove className={classNames(grooveClass, "-scale-x-100")} />
       </div>
 
-      <motion.div className="w-[90%] h-[3px] bg-black rounded-sm mb-2"></motion.div>
+      {/* <motion.div className="w-[70%] h-[3px] bg-black rounded-sm mb-2"></motion.div> */}
       <Navigation pathname={location.pathname} />
     </div>
   );

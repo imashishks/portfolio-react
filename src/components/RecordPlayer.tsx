@@ -1,5 +1,9 @@
 import { useState, useRef, useCallback, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "motion/react";
+import classNames from "classnames";
+// import pauseIcon from "../assets/icons/pause.svg";
+import PauseIcon from "../assets/icons/pause.svg?react";
+
 const API_URL = "https://ashish.world/api/spotify/recently-played?limit=5";
 const DEFAULT_COVER =
   "https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?w=400&h=400&fit=crop";
@@ -9,56 +13,17 @@ const DEFAULT_COVER =
 interface Song {
   id: number;
   title: string;
+  name: string;
   artist: string;
-  duration: string; // display string e.g. "3:42"
-  durationSecs: number; // total seconds for seek calculations
+  duration: string;
+  durationSecs: number;
   cover: string;
+  albumArt: string;
+  previewUrl: string | null;
+  playedAt: string | null;
 }
 
-// ─── Data ─────────────────────────────────────────────────────────────────────
-
-const playlist: Song[] = [
-  {
-    id: 1,
-    title: "The Final Countdown",
-    artist: "Europe",
-    duration: "5:09",
-    durationSecs: 309,
-    cover: "https://upload.wikimedia.org/wikipedia/en/1/1a/Europefinalcountdown.jpg",
-  },
-  {
-    id: 2,
-    title: "car keys",
-    artist: "Tsumyoki, Venserto, lil help",
-    duration: "2:47",
-    durationSecs: 167,
-    cover: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=400&h=400&fit=crop",
-  },
-  {
-    id: 3,
-    title: "Running Up That Hill",
-    artist: "Kate Bush",
-    duration: "5:02",
-    durationSecs: 302,
-    cover: "https://upload.wikimedia.org/wikipedia/en/0/05/KateBush-RunningUpThatHill.jpg",
-  },
-  {
-    id: 4,
-    title: "Mr. Brightside",
-    artist: "The Killers",
-    duration: "3:42",
-    durationSecs: 222,
-    cover: "https://upload.wikimedia.org/wikipedia/en/7/7e/Killers_Mr_Brightside.jpg",
-  },
-  {
-    id: 5,
-    title: "Take On Me",
-    artist: "a-ha",
-    duration: "3:46",
-    durationSecs: 226,
-    cover: "https://upload.wikimedia.org/wikipedia/en/1/1f/A-ha_-_Take_On_Me_%28Single%29.jpg",
-  },
-];
+// ─── Constants ────────────────────────────────────────────────────────────────
 
 const GROOVE_RADII: number[] = [30, 46, 62, 78, 94, 110, 120];
 const EQ_DELAYS: number[] = [0, 0.15, 0.3];
@@ -68,22 +33,46 @@ const EQ_DELAYS: number[] = [0, 0.15, 0.3];
 function formatTime(secs: number): string {
   const m = Math.floor(secs / 60);
   const s = Math.floor(secs % 60);
-  return `${m}:${s.toString().padStart(2, "0")}`;
+  return `${m}:${String(s).padStart(2, "0")}`;
+}
+
+function formatPlayedAt(dateString: string): string {
+  const played = new Date(dateString);
+  const now = new Date();
+  const diffMs = now.getTime() - played.getTime();
+  const diffMins = Math.floor(diffMs / 60_000);
+  const diffHours = Math.floor(diffMs / 3_600_000);
+
+  if (diffMs < 60_000) return "just now";
+  if (diffMins < 60) return `${diffMins} minute${diffMins === 1 ? "" : "s"} ago`;
+  if (diffHours < 24) return `${diffHours} hour${diffHours === 1 ? "" : "s"} ago`;
+
+  const months = ["January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"];
+  const day = played.getDate();
+  const suffix = day === 1 || day === 21 || day === 31 ? "st"
+    : day === 2 || day === 22 ? "nd"
+      : day === 3 || day === 23 ? "rd" : "th";
+  const year = String(played.getFullYear()).slice(2);
+  return `${day}${suffix} ${months[played.getMonth()]} ${year}`;
 }
 
 // ─── Component ────────────────────────────────────────────────────────────────
+
 
 export default function RecordPlayer() {
   const [activeSong, setActiveSong] = useState<Song | null>(null);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [currentTime, setCurrentTime] = useState<number>(0);
-  const [tracks, setTracks] = useState([]);
+  const [tracks, setTracks] = useState<Song[]>([]);
   const [loading, setLoading] = useState(true);
   const [duration, setDuration] = useState(0);
-
-  const [activeIndex, setActiveIndex] = useState(null);
+  const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const [volume, setVolume] = useState(0.8);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const animFrameRef = useRef<number | null>(null);
+  const seekBarRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     fetch(API_URL)
       .then((r) => r.json())
@@ -93,7 +82,7 @@ export default function RecordPlayer() {
       })
       .catch(() => setLoading(false));
   }, []);
-  const animFrameRef = useRef<number | null>(null);
+
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
@@ -101,21 +90,20 @@ export default function RecordPlayer() {
     const onLoaded = () => setDuration(audio.duration);
     const onEnded = () => {
       setIsPlaying(false);
-      setIsPlaying(false);
-      // Auto-play next
+      if (activeIndex === null) return;
       const next = activeIndex + 1;
       if (next < tracks.length && tracks[next].previewUrl) {
-        playTrack(next);
+        playTrack(tracks[next]);
       }
     };
 
     const onPlay = () => {
       if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
       animFrameRef.current = requestAnimationFrame(tick);
-    }
+    };
     const onPause = () => {
       if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
-    }
+    };
 
     audio.addEventListener("loadedmetadata", onLoaded);
     audio.addEventListener("ended", onEnded);
@@ -138,50 +126,39 @@ export default function RecordPlayer() {
     }
   };
 
-  const seekBarRef = useRef<HTMLDivElement>(null);
+  // ── Audio engine ────────────────────────────────────────────────────────────
 
-  // ── Stub: replace with your audio engine calls ──────────────────────────────
+  const playTrack = useCallback(
+    (track: Song): void => {
+      if (!track?.previewUrl) return;
+      if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
+      const audio = audioRef.current;
+      if (!audio) return;
 
-  const playTrack = useCallback((track: Song): void => {
-    // TODO: load & play audio for _song
-    console.log(" Track ", track)
-    if (!track?.previewUrl) return;
+      setCurrentTime(0);
+      audio.currentTime = 0;
+      audio.src = track.previewUrl;
+      audio.volume = volume;
+      audio.play();
 
-    if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
-    const audio = audioRef.current;
-    if (!audio) return;
-
-    setCurrentTime(0);
-    audio.currentTime = 0; // force native reset
-    audio.src = track.previewUrl;
-    audio.volume = volume;
-    audio.play();
-
-    const index = tracks.find((item: Song) => item.id === track.id)
-    setActiveIndex(index);
-    setIsPlaying(true);
-
-  }, [volume, tracks]);
+      const index = tracks.findIndex((item: Song) => item.id === track.id);
+      setActiveIndex(index);
+      setIsPlaying(true);
+    },
+    [volume, tracks]
+  );
 
   const pauseTrack = useCallback((): void => {
-    if (audioRef.current) {
-      audioRef.current.pause();
-    }
-    if (animFrameRef.current) {
-      cancelAnimationFrame(animFrameRef.current);
-    }
+    if (audioRef.current) audioRef.current.pause();
+    if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
   }, []);
 
   const resumeTrack = useCallback((): void => {
-    if (audioRef.current) {
-      audioRef.current.play();
-    }
+    if (audioRef.current) audioRef.current.play();
   }, []);
 
   const seekTo = useCallback((_seconds: number): void => {
-    if (audioRef.current) {
-      audioRef.current.currentTime = _seconds;
-    }
+    if (audioRef.current) audioRef.current.currentTime = _seconds;
   }, []);
 
   // ── Interaction handlers ────────────────────────────────────────────────────
@@ -210,9 +187,7 @@ export default function RecordPlayer() {
 
   const handleSeekPointer = (e: React.PointerEvent<HTMLDivElement>): void => {
     if (!activeSong || !seekBarRef.current) return;
-    if (e.type === "pointerdown") {
-      e.currentTarget.setPointerCapture(e.pointerId);
-    }
+    if (e.type === "pointerdown") e.currentTarget.setPointerCapture(e.pointerId);
     if (e.type === "pointermove" && e.buttons !== 1) return;
 
     const rect = seekBarRef.current.getBoundingClientRect();
@@ -244,91 +219,33 @@ export default function RecordPlayer() {
           from { transform: rotate(0deg); }
           to { transform: rotate(360deg); }
         }
+        .record-spin {
+          animation: record-spin 3.5s linear infinite;
+        }
       `}</style>
-      <div
-        style={{
-          fontFamily: "'Helvetica Neue', Arial, sans-serif",
-          // background: "#f7f7f5",
-          // minHeight: "100vh",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          // padding: "40px 20px",
-        }}
-      >
-        <div
-          style={{
-            display: "flex",
-            gap: "52px",
-            // alignItems: "center",
-            // maxWidth: "860px",
-            width: "100%",
-          }}
-        >
-          {/* ═══════════════════════════════════════════════════════════════
-            RECORD PLAYER
-        ═══════════════════════════════════════════════════════════════ */}
-          <div style={{ position: "relative", flexShrink: 0 }}>
+
+      <div className="flex items-center justify-center">
+        <div className="flex gap-[52px] w-full">
+
+          {/* ═══════════════ RECORD PLAYER ═══════════════ */}
+          <div className="relative flex-shrink-0">
 
             {/* Player chassis */}
-            <div
-              style={{
-                width: "360px",
-                height: "340px",
-                background: "#ffffff",
-                borderRadius: "20px",
-                zIndex: 1,
-                position: "relative",
-                // boxShadow:"0 2px 4px rgba(0,0,0,0.04), 0 8px 24px rgba(0,0,0,0.08), 0 24px 64px rgba(0,0,0,0.06)",
-                border: "2px solid rgba(0,0,0)",
-                overflow: "visible",
-              }}
-            >
+            <div className="w-[360px] h-[340px] bg-white rounded-[20px] z-[1] relative border-2 border-black overflow-visible">
+
               {/* Top inner shadow */}
-              <div
-                style={{
-                  position: "absolute",
-                  top: 0, left: 0, right: 0,
-                  height: "50px",
-                  background: "linear-gradient(to bottom, rgba(0,0,0,0.025), transparent)",
-                  borderRadius: "22px 22px 0 0",
-                  pointerEvents: "none",
-                }}
-              />
+              <div className="absolute top-0 left-0 right-0 h-[50px] bg-gradient-to-b from-black/[0.025] to-transparent rounded-t-[22px] pointer-events-none" />
 
               {/* ── VINYL PLATTER ── */}
-              <div
-                style={{
-                  position: "absolute",
-                  top: "26px",
-                  left: "52px",
-                  width: "248px",
-                  height: "248px",
-                }}
-              >
+              <div className="absolute top-[26px] left-[52px] w-[248px] h-[248px]">
+
                 {/* Drop shadow */}
-                <div
-                  style={{
-                    position: "absolute",
-                    inset: "4px",
-                    borderRadius: "50%",
-                    boxShadow: "0 12px 40px rgba(0,0,0,0.22)",
-                  }}
-                />
+                <div className="absolute inset-1 rounded-full shadow-[0_12px_40px_rgba(0,0,0,0.22)]" />
 
                 {/* Spinning disc */}
                 <div
+                  className="w-[248px] h-[248px] rounded-full bg-[#111] relative overflow-hidden flex items-center justify-center record-spin"
                   style={{
-                    width: "248px",
-                    height: "248px",
-                    borderRadius: "50%",
-                    background: "#111",
-                    position: "relative",
-                    overflow: "hidden",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    animation: "record-spin 3.5s linear infinite",
                     animationPlayState: isPlaying && activeSong ? "running" : "paused",
                   }}
                 >
@@ -343,357 +260,145 @@ export default function RecordPlayer() {
                         animate={{ opacity: 1, scale: 1 }}
                         exit={{ opacity: 0, scale: 0.9 }}
                         transition={{ duration: 0.45, ease: "easeOut" }}
-                        style={{
-                          position: "absolute",
-                          inset: 0,
-                          width: "100%",
-                          height: "100%",
-                          objectFit: "cover",
-                          borderRadius: "50%",
-                        }}
+                        className="absolute inset-0 w-full h-full object-cover rounded-full"
                         onError={handleImgError}
                       />
                     )}
                   </AnimatePresence>
 
                   {/* Edge vignette */}
-                  <div
-                    style={{
-                      position: "absolute",
-                      inset: 0,
-                      borderRadius: "50%",
-                      background: "radial-gradient(circle, transparent 55%, rgba(0,0,0,0.55) 100%)",
-                      pointerEvents: "none",
-                      zIndex: 2,
-                    }}
-                  />
+                  <div className="absolute inset-0 rounded-full bg-[radial-gradient(circle,transparent_55%,rgba(0,0,0,0.55)_100%)] pointer-events-none z-[2]" />
 
                   {/* Groove rings */}
                   {GROOVE_RADII.map((r) => (
                     <div
                       key={r}
+                      className="absolute rounded-full pointer-events-none z-[3] transition-[border-color] duration-400"
                       style={{
-                        position: "absolute",
                         width: `${r * 2}px`,
                         height: `${r * 2}px`,
-                        borderRadius: "50%",
                         border: `1px solid ${vinylCover ? "rgba(0,0,0,0.12)" : "rgba(255,255,255,0.08)"}`,
-                        pointerEvents: "none",
-                        zIndex: 3,
-                        transition: "border-color 0.4s ease",
                       }}
                     />
                   ))}
 
                   {/* Specular sheen */}
-                  <div
-                    style={{
-                      position: "absolute",
-                      inset: 0,
-                      borderRadius: "50%",
-                      background: "radial-gradient(ellipse at 32% 26%, rgba(255,255,255,0.18) 0%, transparent 50%)",
-                      pointerEvents: "none",
-                      zIndex: 4,
-                    }}
-                  />
+                  <div className="absolute inset-0 rounded-full bg-[radial-gradient(ellipse_at_32%_26%,rgba(255,255,255,0.18)_0%,transparent_50%)] pointer-events-none z-[4]" />
 
                   {/* Center label */}
-                  <div
-                    style={{
-                      position: "absolute",
-                      width: "62px",
-                      height: "62px",
-                      borderRadius: "50%",
-                      background: "linear-gradient(135deg, #f0ece4, #ddd8cc)",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      zIndex: 10,
-                      boxShadow: "0 2px 16px rgba(0,0,0,0.5)",
-                    }}
-                  >
-                    <div
-                      style={{
-                        width: "10px",
-                        height: "10px",
-                        borderRadius: "50%",
-                        background: "#aaa",
-                        boxShadow: "inset 0 1px 3px rgba(0,0,0,0.4)",
-                      }}
-                    />
+                  <div className="absolute w-[62px] h-[62px] rounded-full bg-gradient-to-br from-[#f0ece4] to-[#ddd8cc] flex items-center justify-center z-10 shadow-[0_2px_16px_rgba(0,0,0,0.5)]">
+                    <div className="w-[10px] h-[10px] rounded-full bg-[#aaa] shadow-[inset_0_1px_3px_rgba(0,0,0,0.4)]" />
                   </div>
                 </div>
               </div>
 
               {/* ── TONEARM ── */}
-              <motion.div
+              <div className="absolute top-[16px] right-[22px] z-20">
+                {/* Pivot dot */}
+                <div className="absolute -top-1 right-[3px] w-5 h-5 rounded-full z-[21] border-2 border-black bg-white" />
 
-
-                style={{
-                  position: "absolute",
-                  top: "16px",
-                  right: "22px",
-
-                  zIndex: 20,
-                }}
-              >
-                <div
-                  style={{
-                    position: "absolute",
-                    top: "-4px", right: "3px",
-                    width: "20px", height: "20px",
-                    borderRadius: "50%",
-                    // background: "linear-gradient(145deg, #e8e8e8, #c0c0c0)",
-                    // boxShadow: "0 2px 6px rgba(0,0,0,0.15)",
-                    zIndex: 21,
-                    border: "2px solid #000",
-                    background: "#fff"
-                  }}
-                />
+                {/* Arm */}
                 <motion.div
                   animate={{ rotate: tonearmAngle }}
                   transition={{ duration: 0.9, ease: [0.34, 1.05, 0.64, 1] }}
-                  style={{
-                    transformOrigin: "top right",
-                    width: "7px",
-                    height: "136px",
-                    // background: "linear-gradient(to right, #e0e0e0, #c0c0c0, #d8d8d8)",
-                    borderRadius: "4px",
-                    marginRight: "7px",
-                    // boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
-                    position: "relative",
-                    background: "#2592c1",
-
-                    border: "2px solid #000"
-                  }}
+                  className="w-[7px] h-[136px] rounded-[4px] mr-[7px] relative bg-blue border-2 border-black"
+                  style={{ transformOrigin: "top right" }}
                 >
-                  <div
-                    style={{
-                      position: "absolute",
-                      bottom: "-10px", left: "50%",
-                      transform: "translateX(-50%) rotate(-18deg)",
-                      width: "22px", height: "22px",
-                      // background: "linear-gradient(145deg, #d8d8d8, #b8b8b8)",
-                      borderRadius: "20px",
-                      background: "#fff",
-                      border: "2px solid #000"
-                      // boxShadow: "0 2px 8px rgba(0,0,0,0.12)",
-                    }}
-                  />
-                  <div
-                    style={{
-                      position: "absolute",
-                      bottom: "-17px", left: "50%",
-                      transform: "translateX(-50%)",
-                      width: "6px", height: "9px",
-                      background: "#2592c1",
-                      borderRadius: "0 0 2px 2px",
-                      border: "2px solid #000"
-                    }}
-                  />
+                  {/* Cartridge body */}
+                  <div className="absolute -bottom-[10px] left-1/2 -translate-x-1/2 -rotate-[18deg] w-[22px] h-[22px] rounded-[20px] bg-white border-2 border-black" />
+                  {/* Stylus */}
+                  <div className="absolute -bottom-[17px] left-1/2 -translate-x-1/2 w-[6px] h-[9px] bg-blue rounded-b-sm border-2 border-black" />
                 </motion.div>
-              </motion.div>
+              </div>
 
               {/* ── BOTTOM CONTROLS ── */}
-              <div
-                style={{
-                  position: "absolute",
-                  bottom: "18px",
-                  left: "20px",
-                  right: "20px",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "12px",
-                }}
-              >
+              <div className="absolute bottom-[18px] left-5 right-5 flex items-center gap-3">
+
                 {/* Play / Pause button */}
                 <motion.button
                   onClick={handlePlayPause}
-                  // whileTap={{ scale: 0.92 }}
-                  // whileHover={{ scale: 1.06 }}
                   disabled={!activeSong}
-                  style={{
-                    width: "38px",
-                    height: "38px",
-                    borderRadius: "50%",
-
-                    border: "2px solid #000",
-                    cursor: activeSong ? "pointer" : "default",
-                    // background: activeSong ? "linear-gradient(145deg, #e05c20, #c04010)": "linear-gradient(145deg, #e8e8e8, #d0d0d0)",
-                    // boxShadow: activeSong? "3px 3px 8px rgba(224,92,32,0.35), -1px -1px 4px rgba(255,255,255,0.5)": "3px 3px 8px rgba(0,0,0,0.1), -1px -1px 4px rgba(255,255,255,0.9)",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    flexShrink: 0,
-                    transition: "background 0.3s ease, box-shadow 0.3s ease",
-                    outline: "none",
-                    padding: 0,
-                  }}
+                  className="w-[38px] h-[38px] rounded-full border-2 border-black flex items-center justify-center flex-shrink-0 outline-none p-0 bg-transparent"
+                  style={{ cursor: activeSong ? "pointer" : "default" }}
                   aria-label={isPlaying ? "Pause" : "Play"}
+                  whileTap={{ scale: 0.92 }}
+                  whileHover={{ scale: 1.06 }}
                 >
-                  {/* <AnimatePresence mode="wait" initial={false}> */}
-                  {isPlaying ? (
-                    /* Pause icon */
-                    <motion.svg
-                      key="pause"
-                      // initial={{ opacity: 0, scale: 0.6 }}
-                      // animate={{ opacity: 1, scale: 1 }}
-                      // exit={{ opacity: 0, scale: 0.6 }}
-                      transition={{ duration: 0.15 }}
-                      width="14"
-                      height="14"
-                      viewBox="0 0 14 14"
-                      fill="none"
-                    >
-                      <rect x="2" y="2" width="3.5" height="10" rx="1" fill="#000" />
-                      <rect x="8.5" y="2" width="3.5" height="10" rx="1" fill="#000" />
-                    </motion.svg>
-                  ) : (
-                    /* Play icon */
-                    <motion.svg
-                      key="play"
-                      // initial={{ opacity: 0, scale: 0.6 }}
-                      // animate={{ opacity: 1, scale: 1 }}
-                      // exit={{ opacity: 0, scale: 0.6 }}
-                      transition={{ duration: 0.15 }}
-                      width="14"
-                      height="14"
-                      viewBox="0 0 14 14"
-                      fill="none"
-
-                      style={{ marginLeft: "2px" }}
-                    >
-                      <path d="M3 2L12 7L3 12V2Z" fill="#000" />
-                    </motion.svg>
-                  )}
-                  {/* </AnimatePresence> */}
+                  <AnimatePresence mode="wait" initial={false}>
+                    {isPlaying ? (
+                      <motion.svg
+                        key="pause"
+                        initial={{ opacity: 0, scale: 0.6 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.6 }}
+                        transition={{ duration: 0.15 }}
+                        width="14"
+                        height="14"
+                        viewBox="0 0 14 14"
+                        fill="none"
+                      >
+                        <rect x="2" y="2" width="3.5" height="10" rx="1" fill="#000" />
+                        <rect x="8.5" y="2" width="3.5" height="10" rx="1" fill="#000" />
+                      </motion.svg>
+                    ) : (
+                      <motion.svg
+                        key="play"
+                        initial={{ opacity: 0, scale: 0.6 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.6 }}
+                        transition={{ duration: 0.15 }}
+                        width="14"
+                        height="14"
+                        viewBox="0 0 14 14"
+                        fill="none"
+                        className="ml-0.5"
+                      >
+                        <path d="M3 2L12 7L3 12V2Z" fill="#000" />
+                      </motion.svg>
+                    )}
+                  </AnimatePresence>
                 </motion.button>
 
-                {/* Seek bar + time */}
-                <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "5px" }}>
-                  {/* Track */}
+                {/* Seek bar */}
+                <div className="flex-1 flex flex-col gap-[5px]">
                   <div
                     ref={seekBarRef}
                     onPointerDown={handleSeekPointer}
                     onPointerMove={handleSeekPointer}
-                    style={{
-                      height: "10px",
-                      background: "#e8e8e8",
-                      
-                      left: 0,
-                        top: "1px",
-                      borderRadius: "11px",
-                      // boxShadow: "inset 0 1px 3px rgba(0,0,0,0.08)",
-                      position: "relative",
-                      cursor: activeSong ? "pointer" : "default",
-                      border: "2px solid #000"
-                    }}
+                    className="h-[10px] bg-[#e8e8e8] rounded-[11px] relative border-2 border-black"
+                    style={{ cursor: activeSong ? "pointer" : "default" }}
                   >
                     {/* Filled progress */}
                     <motion.div
                       animate={{ width: `${progressPct}%` }}
                       transition={{ duration: 0.1, ease: "linear" }}
+                      className="absolute -left-0.5 -top-0.5 h-[10px] rounded-[11px] border-2 border-black"
                       style={{
-                        position: "absolute",
-                        left: "-2px",
-                        top: "-2px",
-                        height: "10px",
-                        background: activeSong
-                          ? "#2592c1"
-                          : "#d8d8d8",
-                        borderRadius: "11px",
-                        //  background: "#2592c1",
-                        // borderRadius: "0 0 2px 2px",
-                        border: "2px solid #000"
+                        background: activeSong ? "#2592c1" : "#d8d8d8",
                       }}
                     />
                     {/* Thumb */}
                     <motion.div
                       animate={{ left: `${progressPct}%` }}
                       transition={{ duration: 0.1, ease: "linear" }}
-                      style={{
-                        position: "absolute",
-                        top: "60%",
-                        transform: "translate(-50%, -50%)",
-                        width: "16px",
-                        height: "16px",
-                        borderRadius: "50%",
-                        background: "#fff",
-                        border: "2px solid #000",
-                        // background: activeSong
-                        //   ? "linear-gradient(145deg, #f4f4f4, #e0e0e0)"
-                        //   : "linear-gradient(145deg, #f0f0f0, #d8d8d8)",
-                        // boxShadow: activeSong
-                        //   ? "0 1px 4px rgba(224,92,32,0.3), 0 1px 2px rgba(0,0,0,0.15)"
-                        //   : "0 1px 3px rgba(0,0,0,0.12)",
-                        pointerEvents: "none",
-                      }}
+                      className="absolute top-[60%] -translate-x-1/2 -translate-y-1/2 w-4 h-4 rounded-full bg-white border-2 border-black pointer-events-none"
                       whileHover={{ scale: 1.3 }}
                     />
                   </div>
-
-                  {/* Time labels */}
-                  {/* <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      fontSize: "9px",
-                      color: activeSong ? "#aaa" : "#ccc",
-                      fontVariantNumeric: "tabular-nums",
-                      letterSpacing: "0.02em",
-                      transition: "color 0.3s ease",
-                    }}
-                  >
-                    <span>{formatTime(currentTime)}</span>
-                    <span>{activeSong ? activeSong.duration : "0:00"}</span>
-                  </div> */}
                 </div>
 
-                {/* Decorative knob (right) */}
-                <div
-                  style={{
-                    width: "38px",
-                    height: "38px",
-                    borderRadius: "50%",
-                    border: "2px solid #000",
-                    // background: "linear-gradient(145deg, #f2f2f2, #d0d0d0)",
-                    // boxShadow: "3px 3px 8px rgba(0,0,0,0.1), -1px -1px 4px rgba(255,255,255,0.9)",
-                    flexShrink: 0,
-                    position: "relative",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                >
-                  {/* Knob indicator line */}
-                  <div
-                    style={{
-                      width: "2px",
-                      height: "16px",
-                      transform: "rotate(45deg)",
-                      background: "#000",
-                      borderRadius: "1px",
-                    }}
-                  />
+                {/* Decorative knob */}
+                <div className="w-[38px] h-[38px] rounded-full border-2 border-black flex-shrink-0 relative flex items-center justify-center">
+                  <div className="w-0.5 h-4 rotate-45 bg-black rounded-sm" />
                 </div>
               </div>
             </div>
-            <div style={{
-              position: "absolute",
-              width: "360px",
-              height: "350px",
-              background: "#000",
-              borderRadius: "32px",
-              // boxShadow:"0 2px 4px rgba(0,0,0,0.04), 0 8px 24px rgba(0,0,0,0.08), 0 24px 64px rgba(0,0,0,0.06)",
-              border: "2px solid rgba(0,0,0)",
-              overflow: "visible",
-              top: "0"
-            }}>
 
-            </div>
+            {/* Shadow block behind chassis */}
+            <div className="absolute top-0 w-[360px] h-[350px] bg-black rounded-[32px] border-2 border-black overflow-visible" />
 
             {/* Now playing label */}
-            <div style={{ marginTop: "18px", textAlign: "center", minHeight: "50px" }}>
+            <div className="mt-[18px] text-center min-h-[50px]">
               <AnimatePresence mode="wait">
                 {activeSong ? (
                   <motion.div
@@ -703,24 +408,21 @@ export default function RecordPlayer() {
                     exit={{ opacity: 0, y: -6 }}
                     transition={{ duration: 0.35 }}
                   >
-                    <div
-                      style={{
-                        fontSize: "10px",
-                        letterSpacing: "0.18em",
-                        textTransform: "uppercase",
-                        color: "#e05c20",
-                        marginBottom: "5px",
-                        fontWeight: 600,
-                      }}
-                    >
-                      {isPlaying ? "▶ Now Playing" : "⏸ Paused"}
-                    </div>
-                    <div style={{ color: "#1a1a1a", fontSize: "14px", fontWeight: 700 }}>
-                      {activeSong.title}
-                    </div>
-                    <div style={{ color: "#aaa", fontSize: "12px", marginTop: "2px" }}>
-                      {activeSong.artist}
-                    </div>
+                    <motion.div
+                      key={isPlaying ? "playing" : "paused"}
+                      initial={{ opacity: 0, y: 6 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -6 }}
+                      transition={{ duration: 0.35 }}
+                      className="text-[14px]  uppercase text-blue   flex items-center  justify-center gap-1">
+                      {isPlaying ? (
+                        "Now Playing"
+                      ) : (
+                        "Paused"
+                      )}
+                    </motion.div>
+                    <div className="text-[#1a1a1a] text-sm font-bold">{activeSong.title}</div>
+                    <div className="text-[#aaa] text-xs mt-0.5">{activeSong.artist}</div>
                   </motion.div>
                 ) : (
                   <motion.div
@@ -728,7 +430,7 @@ export default function RecordPlayer() {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    style={{ color: "#ccc", fontSize: "12px", marginTop: "6px" }}
+                    className="text-[#ccc] text-xs mt-1.5"
                   >
                     Select a track to play
                   </motion.div>
@@ -737,88 +439,64 @@ export default function RecordPlayer() {
             </div>
           </div>
 
-          {/* ═══════════════════════════════════════════════════════════════
-            PLAYLIST
-        ═══════════════════════════════════════════════════════════════ */}
-          <div style={{ flex: 1 }}>
-
-
-            <div style={{ display: "flex", flexDirection: "column", gap: "3px" }}>
+          {/* ═══════════════ PLAYLIST ═══════════════ */}
+          <div className="flex-1">
+            <div className="flex flex-col gap-[3px]">
               {tracks.map((song, i) => {
                 const isActive: boolean = activeSong?.id === song.id;
                 return (
+                  /** Main div */
                   <motion.div
                     key={song.id}
-                    initial={{ opacity: 0, x: 16 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: i * 0.07, duration: 0.35 }}
+                    initial={{ opacity: 0, x: 0 }}
+                    animate={{
+                      opacity: 1,
+                      x: 0,
+                     
+                      borderColor: isActive ? "#000000" : "rgba(0,0,0,0)",
+                    }}
+                    transition={{
+                      delay: i * 0.07,
+                      duration: 0.35,
+                      backgroundColor: { duration: 0.25, delay: 0 },
+                      borderColor: { duration: 0.25, delay: 0 },
+                    }}
                     onClick={() => handleSelectSong(song)}
                     whileHover={{ x: 3 }}
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "12px",
-                      padding: "10px 12px 10px 16px",
-                      borderRadius: "12px",
-                      cursor: "pointer",
-                      background: isActive ? "#fff" : "transparent",
-                      boxShadow: isActive
-                        ? "0 2px 12px rgba(0,0,0,0.07), 0 1px 3px rgba(0,0,0,0.04)"
-                        : "none",
-                      transition: "background 0.25s ease, box-shadow 0.25s ease",
-                      position: "relative",
-                    }}
+                    className="flex items-center gap-3 px-3 py-[10px] pl-4 rounded-xl cursor-pointer relative border-2 border-solid"
                   >
                     {/* Active accent bar */}
                     {isActive && (
                       <motion.div
                         layoutId="activeBar"
-                        style={{
-                          position: "absolute",
-                          left: 0,
-                          top: "20%",
-                          bottom: "20%",
-                          width: "3px",
-                          borderRadius: "2px",
-                          background: "#e05c20",
-                        }}
+                        className="absolute left-0 top-[20%] bottom-[20%] w-[3px] rounded-sm bg-blue"
                       />
                     )}
 
                     {/* Track number / EQ bars */}
-                    <div style={{ width: "18px", textAlign: "center", flexShrink: 0 }}>
+                    <div className="w-[18px] text-center flex-shrink-0">
                       {isActive && isPlaying ? (
-                        <div
-                          style={{
-                            display: "flex",
-                            gap: "2px",
-                            alignItems: "flex-end",
-                            height: "14px",
-                            justifyContent: "center",
-                          }}
-                        >
+                        <div className="flex gap-0.5 items-end h-[14px] justify-center">
                           {EQ_DELAYS.map((delay) => (
                             <motion.div
                               key={delay}
                               animate={{ scaleY: [0.3, 1, 0.3] }}
-                              transition={{ repeat: Infinity, duration: 0.75, delay, ease: "easeInOut" }}
-                              style={{
-                                width: "3px",
-                                height: "12px",
-                                background: "#e05c20",
-                                borderRadius: "2px",
-                                transformOrigin: "bottom",
+                              transition={{
+                                repeat: Infinity,
+                                duration: 0.75,
+                                delay,
+                                ease: "easeInOut",
                               }}
+                              className="w-[3px] h-3 bg-blue rounded-sm origin-bottom"
                             />
                           ))}
                         </div>
                       ) : (
                         <span
-                          style={{
-                            color: isActive ? "#e05c20" : "#ddd",
-                            fontSize: "11px",
-                            fontWeight: 500,
-                          }}
+                          className={classNames(
+                            "text-[11px] font-medium transition-colors duration-[250ms]",
+                            isActive ? "text-blue" : "text-gray-400"
+                          )}
                         >
                           {i + 1}
                         </span>
@@ -827,65 +505,40 @@ export default function RecordPlayer() {
 
                     {/* Album thumbnail */}
                     <div
+                      className="w-11 h-11 rounded-lg overflow-hidden flex-shrink-0 transition-shadow duration-300"
                       style={{
-                        width: "44px",
-                        height: "44px",
-                        borderRadius: "8px",
-                        overflow: "hidden",
-                        flexShrink: 0,
                         boxShadow: isActive
                           ? "0 4px 14px rgba(224,92,32,0.2)"
                           : "0 2px 8px rgba(0,0,0,0.1)",
-                        transition: "box-shadow 0.3s ease",
                       }}
                     >
                       <img
                         src={song.albumArt}
                         alt={song.name}
-                        style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+                        className="w-full h-full object-cover block"
                         onError={handleImgError}
                       />
                     </div>
 
                     {/* Title + artist */}
-                    <div style={{ flex: 1, minWidth: 0 }}>
+                    <div className="flex-1 min-w-0">
                       <div
+                        className="text-[13px] whitespace-nowrap overflow-hidden text-ellipsis transition-colors duration-[250ms]"
                         style={{
                           color: isActive ? "#1a1a1a" : "#666",
-                          fontSize: "13px",
                           fontWeight: isActive ? 700 : 400,
-                          whiteSpace: "nowrap",
-                          overflow: "hidden",
-                          textOverflow: "ellipsis",
-                          transition: "color 0.25s",
                         }}
                       >
                         {song.name}
                       </div>
-                      <div
-                        style={{
-                          color: "#bbb",
-                          fontSize: "11px",
-                          marginTop: "2px",
-                          whiteSpace: "nowrap",
-                          overflow: "hidden",
-                          textOverflow: "ellipsis",
-                        }}
-                      >
+                      <div className="text-[#bbb] text-[11px] mt-0.5 whitespace-nowrap overflow-hidden text-ellipsis">
                         {song.artist}
                       </div>
                     </div>
 
-                    {/* Duration */}
-                    <div
-                      style={{
-                        color: "#ccc",
-                        fontSize: "11px",
-                        flexShrink: 0,
-                        fontVariantNumeric: "tabular-nums",
-                      }}
-                    >
-                      {song.playedAt}
+                    {/* Played at */}
+                    <div className="text-[#ccc] text-[11px] flex-shrink-0 tabular-nums">
+                      {song.playedAt ? formatPlayedAt(song.playedAt) : song.duration}
                     </div>
                   </motion.div>
                 );
@@ -894,6 +547,7 @@ export default function RecordPlayer() {
           </div>
         </div>
       </div>
+
       <audio ref={audioRef} />
     </>
   );
