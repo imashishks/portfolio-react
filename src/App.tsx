@@ -1,7 +1,8 @@
+import { useState } from "react";
 import { BrowserRouter, useRoutes } from "react-router-dom";
 import Layout from "./components/Layout";
 import { routes } from "./config/routes";
-import Button from "./components/common/Button";
+import LoaderScreen from "./components/LoaderScreen";
 
 function AppRoutes() {
   const element = useRoutes(routes);
@@ -9,13 +10,17 @@ function AppRoutes() {
 }
 
 function App() {
+  const [loaderDone, setLoaderDone] = useState(false);
+
   return (
-    <BrowserRouter>
-      <AppRoutes />
-      {/* <Button className="fixed top-1/2 right-0 rotate-270 shadow-[-4px_0px_0_rgb(13,13,13)]! transform-[translate(25%,100%)] rounded-b-none! h-[44px] hover:h-[46px] hover:transform-[translate(26%,92%)]">
-        Resume
-      </Button> */}
-    </BrowserRouter>
+    <>
+      <LoaderScreen onComplete={() => setLoaderDone(true)} />
+      {loaderDone && (
+        <BrowserRouter>
+          <AppRoutes />
+        </BrowserRouter>
+      )}
+    </>
   );
 }
 

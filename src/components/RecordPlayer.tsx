@@ -422,7 +422,12 @@ export default function RecordPlayer() {
                       )}
                     </motion.div>
                     <div className="text-[#1a1a1a] text-sm font-bold">{activeSong.title}</div>
-                    <div className="text-[#aaa] text-xs mt-0.5">{activeSong.artist}</div>
+                    <div
+                      className="text-[#aaa] text-xs mt-0.5 max-w-[200px] mx-auto whitespace-nowrap overflow-hidden text-ellipsis"
+                      title={activeSong.artist}
+                    >
+                      {activeSong.artist}
+                    </div>
                   </motion.div>
                 ) : (
                   <motion.div
@@ -531,7 +536,8 @@ export default function RecordPlayer() {
                       >
                         {song.name}
                       </div>
-                      <div className="text-[#bbb] text-[11px] mt-0.5 whitespace-nowrap overflow-hidden text-ellipsis">
+                      <div className="text-[#bbb] text-[11px] mt-0.5  max-w-[200px]  whitespace-nowrap overflow-hidden text-ellipsis">
+                        
                         {song.artist}
                       </div>
                     </div>

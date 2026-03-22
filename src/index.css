@@ -214,7 +214,7 @@
   container-type: scroll-state;
 }
 
-img {
+.slide img {
   transform-style: preserve-3d;
   animation: carousel linear both;
   animation-timeline: view(x);
@@ -231,4 +231,19 @@ img {
   to {
     transform: rotateY(70deg) translateZ(-100px) scale(0.8);
   }
+}
+
+/* Fullscreen loader overlay */
+.loader-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #ffffff;
+}
+
+.loader-gif {
+  animation: none !important;
 }
