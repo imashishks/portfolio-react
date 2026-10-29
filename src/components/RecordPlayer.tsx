@@ -225,10 +225,11 @@ export default function RecordPlayer() {
       `}</style>
 
       <div className="flex items-center justify-center">
-        <div className="flex gap-[52px] w-full">
+        <div className="flex w-full flex-col gap-6 lg:flex-row lg:gap-[52px]">
 
           {/* ═══════════════ RECORD PLAYER ═══════════════ */}
-          <div className="relative flex-shrink-0">
+          <div className="relative mx-auto h-[230px] w-[198px] flex-shrink-0 min-[370px]:h-[250px] min-[370px]:w-[216px] sm:h-[330px] sm:w-[288px] md:h-[370px] md:w-[324px] lg:mx-0 lg:h-auto lg:w-[360px]">
+            <div className="origin-top-left scale-[0.55] min-[370px]:scale-[0.6] sm:scale-[0.8] md:scale-[0.9] lg:scale-100">
 
             {/* Player chassis */}
             <div className="w-[360px] h-[340px] bg-white rounded-[20px] z-[1] relative border-2 border-black overflow-visible">
@@ -414,16 +415,16 @@ export default function RecordPlayer() {
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -6 }}
                       transition={{ duration: 0.35 }}
-                      className="text-[14px]  uppercase text-blue   flex items-center  justify-center gap-1">
+                      className="flex items-center justify-center gap-1 text-[24px] uppercase text-blue sm:text-[14px]">
                       {isPlaying ? (
                         "Now Playing"
                       ) : (
                         "Paused"
                       )}
                     </motion.div>
-                    <div className="text-[#1a1a1a] text-sm font-bold">{activeSong.title}</div>
+                    <div className="text-[20px] font-bold text-[#1a1a1a] sm:text-sm">{activeSong.title}</div>
                     <div
-                      className="text-[#aaa] text-xs mt-0.5 max-w-[200px] mx-auto whitespace-nowrap overflow-hidden text-ellipsis"
+                      className="mx-auto mt-0.5 max-w-[200px] overflow-hidden text-ellipsis whitespace-nowrap text-[18px] text-[#aaa] sm:text-xs"
                       title={activeSong.artist}
                     >
                       {activeSong.artist}
@@ -435,12 +436,13 @@ export default function RecordPlayer() {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    className="text-[#ccc] text-xs mt-1.5"
+                    className="mt-1.5 text-[18px] text-[#ccc] sm:text-xs"
                   >
                     Select a track to play
                   </motion.div>
                 )}
               </AnimatePresence>
+            </div>
             </div>
           </div>
 

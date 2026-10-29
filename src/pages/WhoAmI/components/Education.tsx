@@ -21,7 +21,7 @@ const education = [
 ];
 export default function Education() {
   return (
-    <section className="mt-16 w-full mb-8">
+    <section className="mt-8 mb-8 w-full sm:mt-16">
       <motion.h3 
         variants={{
           hidden: { opacity: 0, y: 16 },
@@ -33,7 +33,7 @@ export default function Education() {
         education
       </motion.h3>
       <section
-        className="grid grid-cols-2 gap-x-16 gap-y-4 max-w-4xl"
+        className="grid max-w-4xl grid-cols-1 gap-x-8 gap-y-4 sm:grid-cols-2"
       >
         {education.map((exp, index) => (
           <motion.div

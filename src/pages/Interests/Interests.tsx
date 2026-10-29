@@ -25,7 +25,7 @@ function Interests() {
   ];
   return (
     <TabLayout tabs={tabs} basePath={ROUTES.INTERESTS.key}>
-      <div className="flex items-center flex-col w-[80%] h-full">
+      <div className="flex h-full w-full flex-col md:w-[80%]">
         <Outlet />
       </div>
     </TabLayout>

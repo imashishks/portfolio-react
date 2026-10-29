@@ -35,15 +35,20 @@ function Layout({ children }: LayoutProps) {
   return (
     <div
       className={classNames(
-        "w-screen h-screen flex flex-col justify-end items-center transition-colors duration-400 ease-in-out ",
+        "w-full h-dvh flex flex-col justify-end items-center overflow-x-hidden pt-[5vh] md:pt-[8vh] transition-colors duration-400 ease-in-out",
         backgroundClass
       )}
     >
-      <div className="w-[80%] flex items-end h-[85%] relative">
+      <div className="w-[94%] sm:w-[90%] md:w-[85%] lg:w-[80%] flex min-h-0 flex-1 items-end relative">
         {/* <svg width="63" height="44" viewBox="0 0 63 44" fill="none">
           <path d="M63 0 A 63 44 0 0 0 0 44 L 63 44 Z" fill="black" />
         </svg> */}
-        <Groove className={classNames(grooveClass)} />
+        <Groove
+          className={classNames(
+            "h-auto w-7 shrink-0 sm:w-9 md:w-[53px]",
+            grooveClass
+          )}
+        />
 
 
         {children}
@@ -51,7 +56,13 @@ function Layout({ children }: LayoutProps) {
         {/* <svg width="63" height="44" viewBox="0 0 63 44" fill="none">
           <path d="M0 0 A 63 44 0 0 1 63 44 L 0 44 Z" fill="black" />
         </svg> */}
-        <Groove className={classNames(grooveClass, "-scale-x-100")} />
+        <Groove
+          className={classNames(
+            "h-auto w-7 shrink-0 sm:w-9 md:w-[53px]",
+            grooveClass,
+            "-scale-x-100"
+          )}
+        />
       </div>
 
       {/* <motion.div className="w-[70%] h-[3px] bg-black rounded-sm mb-2"></motion.div> */}

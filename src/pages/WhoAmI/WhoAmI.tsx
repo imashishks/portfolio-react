@@ -19,7 +19,7 @@ function WhoAmI() {
             },
           },
         }}
-        className=" flex items-center flex-col w-4/6 h-full"
+        className="flex h-full w-full flex-col items-center md:w-4/6"
       >
         <motion.img
           variants={{
@@ -29,7 +29,7 @@ function WhoAmI() {
           transition={{ duration: 0.4, ease: "easeOut" }}
           src={profilePic}
           alt="Profile"
-          className="rounded-full w-[150px] min-w-[150px] min-h-[150px] mt-8 "
+          className="mt-4 h-[110px] w-[110px] rounded-full sm:mt-8 sm:h-[150px] sm:w-[150px]"
         />
         <motion.h2 
           variants={{
@@ -37,7 +37,7 @@ function WhoAmI() {
             visible: { opacity: 1, y: 0 },
           }}
           transition={{ duration: 0.4, ease: "easeOut" }}
-          className="mt-4 text-2xl ">
+          className="mt-4 text-xl sm:text-2xl">
           hello! my name is{" "}
           <span className="font-bold text-orange">Ashish</span> Kumar
         </motion.h2>
@@ -47,7 +47,7 @@ function WhoAmI() {
             visible: { opacity: 1, y: 0 },
           }}
           transition={{ duration: 0.4, ease: "easeOut" }}
-          className="mt-8  text-sm">
+          className="mt-6 text-sm sm:mt-8">
           Born and brought up in Jamshedpur (the steel city of India), working
           now as full time software engineer in Bengaluru ( the silicon valley
           of India).
@@ -58,7 +58,7 @@ function WhoAmI() {
             visible: { opacity: 1, y: 0 },
           }}
           transition={{ duration: 0.4, ease: "easeOut" }}
-          className="mt-8  text-sm">
+          className="mt-6 text-sm sm:mt-8">
           Apart from work, i like to paint, cycling and long walks. Coffee is my
           choice of fuel (both cold and hot brew, i don't discriminate). Never
           said no to a nice chicken burger or some chicken biryani. Big fan of

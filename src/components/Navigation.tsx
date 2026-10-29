@@ -7,8 +7,8 @@ function Navigation({ pathname }: { pathname: string }) {
   };
 
   return (
-    <nav className="flex justify-center h-20">
-      <div className="flex justify-center max-w-lg items-start pt-2 gap-4">
+    <nav className="flex w-full justify-center px-2 py-3 pb-6 sm:pb-8 md:pb-10">
+      <div className="flex w-full max-w-lg flex-wrap items-start justify-center gap-2 gap-y-3 pt-1 sm:gap-3 md:gap-4">
         <KeypadButton variant="link" to="whoami" active={isActive("whoami")}>
           Who am I?
         </KeypadButton>

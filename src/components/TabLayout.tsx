@@ -48,14 +48,14 @@ function TabLayout({ children, tabs, basePath = "" }: TabLayoutProps) {
       initial={{ height: "0" }}
       animate={{ height: "100%" }}
       transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
-      className="content bg-white bg-[radial-gradient(circle,#e0e0e0_1px,transparent_1px)] bg-size-[20px_20px] w-4/6  rounded-t-xl pt-8 p-6 pb-0 grow h-full  relative"
+      className="content flex h-full w-4/6 min-w-0 grow flex-col rounded-t-xl bg-white bg-[radial-gradient(circle,#e0e0e0_1px,transparent_1px)] bg-size-[20px_20px] px-3 pt-5 pb-0 sm:px-4 sm:pt-6 md:p-6 md:pb-0 relative"
     >
       {Array.isArray(tabs) && tabs.length > 0 && (
         <motion.div
           initial={{ opacity: "0" }}
           animate={{ opacity: "100%" }}
           transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1], delay: 0.3 }}
-          className="flex gap-1 absolute rotate-90 top-0 right-0 transform-[translate(100%,-49%)] origin-right"
+          className="flex gap-1 absolute rotate-90 top-0 right-2 md:right-0 transform-[translate(100%,-49%)] origin-right"
         >
           {tabs.map((item) => (
             <motion.button
@@ -76,7 +76,7 @@ function TabLayout({ children, tabs, basePath = "" }: TabLayoutProps) {
           ))}
         </motion.div>
       )}
-      <main className="flex-1 h-full relative">
+      <main className="relative min-h-0 flex-1">
         <motion.div
           key={location.pathname}
           initial={{ opacity: 0, filter: "blur(10px)" }}

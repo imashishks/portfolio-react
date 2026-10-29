@@ -43,7 +43,7 @@ function Contact() {
             },
           },
         }}
-        className=" mt-8 flex flex-col w-5/6 h-full"
+        className="mt-4 flex h-full w-full flex-col sm:mt-8 md:w-5/6"
       >
 
         <motion.h2 variants={{
@@ -51,7 +51,7 @@ function Contact() {
           visible: { opacity: 1, y: 0 },
         }} 
         transition={{ duration: 0.4, ease: "easeOut" }}
-        className="mt-8 text-4xl ">
+        className="mt-4 text-2xl sm:mt-8 sm:text-4xl">
           Don’t Hesitate to Reach Out !
         </motion.h2>
         <motion.p variants={{
@@ -59,14 +59,14 @@ function Contact() {
           visible: { opacity: 1, y: 0 },
         }} 
         transition={{ duration: 0.4, ease: "easeOut" }}
-        className="mt-8  text-sm">
+        className="mt-4 text-sm sm:mt-8">
           Let’s talk about UI/UX, art, problem solving, hobbies and life in general :)
         </motion.p>
 
-        <motion.section className="mt-8 w-full">
+        <motion.section className="mt-6 w-full sm:mt-8">
 
           <motion.section
-            className="grid grid-cols-2 gap-x-16 gap-y-4 max-w-4xl"
+            className="grid max-w-4xl grid-cols-1 gap-x-8 gap-y-4 sm:grid-cols-2"
           >
             {contactDetails.map((details, index) => (
               <motion.div
