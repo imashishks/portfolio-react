@@ -1,8 +1,12 @@
 import { motion } from "motion/react";
 const experiences = [
   {
+    title: "Senior Software Engineer, Deel",
+    date: "March 2026 – Present",
+  },
+  {
     title: "Senior Software Engineer, Zeta",
-    date: "Oct 2021 – Present",
+    date: "Oct 2021 – March 2026",
   },
   {
     title: "Software Development Engineer II, Nineleaps",
